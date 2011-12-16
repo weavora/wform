@@ -23,9 +23,12 @@ class ActiveRecord extends CActiveRecord {
 
 	public function save($runValidation=true,$attributes=null) {
 		$parentSave = parent::save($runValidation,$attributes);
-		$event = new CModelEvent($this);
-		$this->onSave($event);
-		return $parentSave && $event->isValid;
+		if ($parentSave) {
+		    $event = new CModelEvent($this);
+			$this->onSave($event);
+			return $parentSave && $event->isValid;
+		}
+		return $parentSave;
 	}
 
 	protected function onValidate($event) {
