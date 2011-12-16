@@ -38,6 +38,7 @@ Setup
 		}
 
 Отображение:
+
 		<?php $form = $this->beginWidget('CActiveForm'); ?>
 		<!-- поля главной формы -->
 		<div class="row">
