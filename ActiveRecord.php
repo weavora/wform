@@ -7,21 +7,32 @@
 
 class ActiveRecord extends CActiveRecord {
 
-	public function onUnsafeAttribute($name,$value)
+	public function onUnsafeAttribute($name, $value)
 	{
 		$event = new CEvent($this, array('name' => $name, 'value' => $value));
-		$this->raiseEvent('onUnsafeAttribute',$event);
+		$this->raiseEvent('onUnsafeAttribute', $event);
 		return parent::onUnsafeAttribute($name, $value);
 	}
 
 	public function validate($attributes = null, $clearErrors = true) {
-		$validate = parent::validate($attributes, $clearErrors);
+		$parentValidate = parent::validate($attributes, $clearErrors);
 		$event = new CModelEvent($this);
 		$this->onValidate($event);
-		return $validate && $event->isValid;
+		return $parentValidate && $event->isValid;
+	}
+
+	public function save($runValidation=true,$attributes=null) {
+		$parentSave = parent::save($runValidation,$attributes);
+		$event = new CModelEvent($this);
+		$this->onSave($event);
+		return $parentSave && $event->isValid;
 	}
 
 	protected function onValidate($event) {
 		$this->raiseEvent('onValidate',$event);
+	}
+
+	public function onSave($event) {
+		$this->raiseEvent('onSave',$event);
 	}
 }
