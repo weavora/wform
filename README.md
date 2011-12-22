@@ -29,12 +29,14 @@ The complex form should be inherited from MyModel class
 				return parent::model($className);
 			}
 
-			return array(
-				'WFormBehavior' => array(
-					'class' => 'ext.wform.WFormBehavior',
-					'relations' => array('client', 'notes'),
-				),
-			);
+			public function behaviors() {
+				return array(
+					'WFormBehavior' => array(
+						'class' => 'ext.wform.WFormBehavior',
+						'relations' => array('client', 'notes'),
+					),
+				);
+			}
 		}
 
 Representation:

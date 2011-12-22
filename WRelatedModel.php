@@ -10,11 +10,11 @@ class WRelatedModel {
 	const RELATION_CLASS = 1;
 	const RELATION_FOREIGN_KEY = 2;
 
-	static public function create($model, $relationName, $relationInfo) {
+	static public function getInstance($model, $relationName, $relationInfo) {
 		if ($relationInfo[self::RELATION_TYPE] == CActiveRecord::HAS_ONE) {
 			$relatedModel = new WRelatedModelHasOne();
 		} else if ($relationInfo[self::RELATION_TYPE] == CActiveRecord::HAS_MANY) {
-		    $relatedModel = new WRelatedModelHasMany();
+			$relatedModel = new WRelatedModelHasMany();
 		}
 
 		$relatedModel->model = $model;

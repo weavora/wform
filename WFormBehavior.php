@@ -6,28 +6,44 @@
  */
 
 class WFormBehavior extends CActiveRecordBehavior {
+
+	/**
+	 * @var array what relations we should save
+	 */
 	public $relations = array();
+
 	protected $relatedModels = array();
 
 	public function events() {
 		return array_merge(parent::events(), array(
-			'onAfterConstruct' => 'afterConstruct',
+			// @todo any ideas how to prevent using custom event for that ? Maybe create attributes dynamic for relations?
 			'onUnsafeAttribute' => 'unsafeAttribute',
-			'onValidate' => 'validate',
-			'onSave' => 'save',
-			'onAfterFind' => 'afterFind',
-			'onBeforeFind' => 'beforeFind',
 		));
 	}
 
+	/**
+	 * Initialize related models
+	 * @param $event
+	 * @return void
+	 */
 	public function afterConstruct($event) {
-		$senderRelations = $event->sender->relations();
-		foreach ($this->relations as $relation) {
-			$this->relatedModels[$relation] = WRelatedModel::create($event->sender, $relation, $senderRelations[$relation]);
-			$this->relatedModels[$relation]->initRelation();
-		}
+		$this->_buildRelatedModel($event->sender);
 	}
 
+	/**
+	 * Rebuild related models
+	 * @param $event
+	 * @return void
+	 */
+	public function afterFind($event) {
+		$this->_buildRelatedModel($event->sender);
+	}
+
+	/**
+	 * Set related models attributes
+	 * @param $event
+	 * @return void
+	 */
 	public function unsafeAttribute($event) {
 		$relation = $event->params['name'];
 		if (isset($this->relatedModels[$relation])) {
@@ -35,34 +51,67 @@ class WFormBehavior extends CActiveRecordBehavior {
 		}
 	}
 
-	public function validate($event) {
-		$validate = true;
+	/**
+	 * Validate related models
+	 * @param $event
+	 * @return void
+	 */
+	public function afterValidate($event) {
+		$model = $event->sender;
 		foreach ($this->relatedModels as $relatedModel) {
-		    $validate = $relatedModel->validate() && $validate;
-		}
-		$event->isValid = $validate;
-	}
-
-	public function save($event) {
-		$success = true;
-		foreach ($this->relatedModels as $relatedModel) {
-			$success = $relatedModel->save() && $success;
-		}
-		$event->isValid = $success;
-	}
-
-	public function afterFind($event) {
-		$senderRelations = $event->sender->relations();
-		foreach ($this->relations as $relation) {
-			$this->relatedModels[$relation] = WRelatedModel::create($event->sender, $relation, $senderRelations[$relation]);
-			if (!$event->sender->$relation) {
-			    $this->relatedModels[$relation]->initRelation();
+			if (!$relatedModel->validate()) {
+				$model->addError($relatedModel->relationName, $relatedModel->relationName . ' is not valid');
 			}
 		}
 	}
 
-	public function beforeFind($event) {
-		// var_dump($event->criteria);
+	/**
+	 * Save related models which depends on parent model
+	 * @return void
+	 */
+	public function afterSave($event) {
+		foreach ($this->relatedModels as $relatedModel) {
+			if (in_array($relatedModel->type, array(CActiveRecord::HAS_ONE, CActiveRecord::HAS_MANY, CActiveRecord::MANY_MANY))) {
+				$relatedModel->save();
+			}
+		}
 	}
 
+	/**
+	 * Save related models which affect to parent models
+	 * @return void
+	 */
+	public function beforeSave($event) {
+		foreach ($this->relatedModels as $relatedModel) {
+			if (in_array($relatedModel->type, array(CActiveRecord::BELONGS_TO, CActiveRecord::MANY_MANY))) {
+				if (!$relatedModel->save())
+					$event->isValid = false;
+			}
+		}
+	}
+
+	/**
+	 * Add relations to criteria.with
+	 * @param $event
+	 * @return void
+	 */
+	public function beforeFind($event) {
+		// @todo implement
+	}
+
+	/**
+	 * Rebuild related models
+	 * 
+	 * @param $parentModel
+	 * @return void
+	 */
+	protected function _buildRelatedModel($parentModel) {
+		$parentRelations = $parentModel->relations();
+		$this->relatedModels = array();
+		foreach ($this->relations as $relation) {
+			if (array_key_exists($relation, $parentRelations)) {
+				$this->relatedModels[$relation] = WRelatedModel::getInstance($parentModel, $relation, $parentRelations[$relation]);
+			}
+		}
+	}
 }

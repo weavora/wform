@@ -7,73 +7,59 @@
 
 class WRelatedModelHasMany {
 
-	public $type;
+	public $type = CActiveRecord::HAS_MANY;
 	public $relationName;
 	public $relationInfo;
 	public $model;
 
-	public function __construct() {
-		$this->type = CActiveRecord::HAS_MANY;
-	}
-
-	public function initRelation() {
-		$relationName = $this->relationName;
-		$relationClass = $this->relationInfo[WRelatedModel::RELATION_CLASS];
-		$this->model->$relationName = array(new $relationClass());
-	}
-
 	public function setAttributes($bunchOfAttributes) {
-		$relationName = $this->relationName;
 		$relationClass = $this->relationInfo[WRelatedModel::RELATION_CLASS];
-
+		$relationPk = $relationClass::model()->getMetaData()->tableSchema->primaryKey;
+		
 		$modelsDictionary = array();
-		if ($this->model->$relationName) {
-			foreach ($this->model->$relationName as $relationModel) {
-			    if ($relationModel->id) {
-			        $modelsDictionary[$relationModel->id] = $relationModel;
-			    }
+		foreach ($this->getRelatedModels() as $relationModel) {
+			if ($relationModel->primaryKey) {
+				$modelsDictionary[$relationModel->primaryKey] = $relationModel;
 			}
 		}
 
 		$relationModels = array();
 		foreach ($bunchOfAttributes as $attributes) {
-			if (isset($attributes['id']) && isset($modelsDictionary[$attributes['id']])) {
-				$relationModel = $modelsDictionary[$attributes['id']];
+			if (isset($attributes[$relationPk]) && isset($modelsDictionary[$attributes[$relationPk]])) {
+				$relationModel = $modelsDictionary[$attributes[$relationPk]];
 			} else {
 				$relationModel = new $relationClass();
 			}
 			$relationModel->attributes = $attributes;
 			$relationModels[] = $relationModel;
 		}
-		$this->model->$relationName = $relationModels;
+		$this->model->{$this->relationName} = $relationModels;
 	}
 
 	public function validate() {
-		$relationName = $this->relationName;
-		$validate = true;
-		$relationModels = $this->model->$relationName;
-		if ($this->model->$relationName) {
-		    foreach ($relationModels as $index => $relationModel) {
-		        $validate = $relationModels[$index]->validate() && $validate;
-		    }
+		$isValid = true;
+		foreach ($this->getRelatedModels() as $relationModel) {
+			$isValid = $relationModel->validate() && $isValid;
 		}
-		$this->model->$relationName = $relationModels;
-		return $validate;
+		return $isValid;
 	}
 
 	public function save() {
-		$relationName = $this->relationName;
-		$success = true;
-		$relationModels = $this->model->$relationName;
 		$foreignKey = $this->relationInfo[WRelatedModel::RELATION_FOREIGN_KEY];
-		if ($this->model->$relationName) {
-		    foreach ($relationModels as $index => $relationModel) {
-		    	$relationModels[$index]->$foreignKey = $this->model->id;
-		        $success = $relationModels[$index]->save() && $success;
-		    }
+
+		$isSuccess = true;
+		foreach ($this->getRelatedModels() as $index => $relationModel) {
+			$relationModel->$foreignKey = $this->model->primaryKey;
+			$isSuccess = $relationModel->save() && $isSuccess;
 		}
-		$this->model->$relationName = $relationModels;
-		return $success;
+		return $isSuccess;
+	}
+
+	public function getRelatedModels() {
+		if (!$this->model->{$this->relationName})
+			return array();
+
+		return (array) $this->model->{$this->relationName};
 	}
 
 }
