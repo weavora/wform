@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-class WRelatedModelHasMany {
+class WFormRelationHasMany {
 
 	public $type = CActiveRecord::HAS_MANY;
 	public $relationName;
@@ -13,7 +13,7 @@ class WRelatedModelHasMany {
 	public $model;
 
 	public function setAttributes($bunchOfAttributes) {
-		$relationClass = $this->relationInfo[WRelatedModel::RELATION_CLASS];
+		$relationClass = $this->relationInfo[WFormRelation::RELATION_CLASS];
 		$relationPk = $relationClass::model()->getMetaData()->tableSchema->primaryKey;
 		
 		$modelsDictionary = array();
@@ -45,7 +45,7 @@ class WRelatedModelHasMany {
 	}
 
 	public function save() {
-		$foreignKey = $this->relationInfo[WRelatedModel::RELATION_FOREIGN_KEY];
+		$foreignKey = $this->relationInfo[WFormRelation::RELATION_FOREIGN_KEY];
 
 		$isSuccess = true;
 		foreach ($this->getRelatedModels() as $index => $relationModel) {
@@ -61,5 +61,4 @@ class WRelatedModelHasMany {
 
 		return (array) $this->model->{$this->relationName};
 	}
-
 }

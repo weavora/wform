@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-class WRelatedModelManyMany extends WRelatedModelHasMany {
+class WFormRelationManyMany extends WFormRelationHasMany {
 
 	public $type = CActiveRecord::HAS_MANY;
 

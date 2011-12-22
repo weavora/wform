@@ -110,7 +110,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 		$this->relatedModels = array();
 		foreach ($this->relations as $relation) {
 			if (array_key_exists($relation, $parentRelations)) {
-				$this->relatedModels[$relation] = WRelatedModel::getInstance($parentModel, $relation, $parentRelations[$relation]);
+				$this->relatedModels[$relation] = WFormRelation::getInstance($parentModel, $relation, $parentRelations[$relation]);
 			}
 		}
 	}

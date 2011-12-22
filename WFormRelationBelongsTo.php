@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-class WRelatedModelBelongsTo extends WRelatedModelHasOne {
+class WFormRelationBelongsTo extends WFormRelationHasOne {
 
 	public $type = CActiveRecord::BELONGS_TO;
 
@@ -13,11 +13,9 @@ class WRelatedModelBelongsTo extends WRelatedModelHasOne {
 		if (!$this->model->{$this->relationName}->save())
 			return false;
 
-		$foreignKey = $this->relationInfo[WRelatedModel::RELATION_FOREIGN_KEY];
+		$foreignKey = $this->relationInfo[WFormRelation::RELATION_FOREIGN_KEY];
 		$this->model->{$foreignKey} = $this->model->{$this->relationName}->primaryKey;
 		
 		return true;
 	}
-
-
 }
