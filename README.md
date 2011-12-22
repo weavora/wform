@@ -3,7 +3,7 @@ Yii Composite Models class
 
 Setup
 -----
-Для начала нам понадобится модель наследующая от нашего класса ActiveRecord
+As a first step we need model inherited from our ActiveRecord class
 
 		<?php
 		class MyModel extends ActiveRecord {
@@ -19,7 +19,7 @@ Setup
 			...
     	}
 
-Комплексная форма будет наследовать от класса MyModel
+The complex form should be inherited from MyModel class
 
 		<?php
 		class MyClassForm extends MyModel {
@@ -37,26 +37,26 @@ Setup
 			);
 		}
 
-Отображение:
+Representation:
 
 		<?php $form = $this->beginWidget('CActiveForm'); ?>
-		<!-- поля главной формы -->
+		<!-- major form fields -->
 		<div class="row">
 			<?php echo $form->labelEx($model, 'name'); ?>
 			<?php echo $form->textField($model, 'name'); ?>
 			<?php echo $form->error($model, 'name'); ?>
 		</div>
 
-		<!-- поля вложенных форм -->
+		<!-- fields of embeded forms -->
 
 		<div class="row">
-			<!-- отношение has one -->
+			<!-- has one relation -->
 			<?php echo $form->labelEx($model->client, 'name'); ?>
 			<?php echo $form->textField($model->client, 'name', array('name' => 'MyClassForm[client][name]')); ?>
 			<?php echo $form->error($model->client, 'name'); ?>
 		</div>
 		<div class="row">
-			<!-- отношение has many -->
+			<!-- has many relation -->
 			<?php if ($myModel->notes): ?>
 				<?php foreach ($myModel->notes as $index => $note): ?>
 					<?php if ($note->isNewRecord): ?>
@@ -72,7 +72,7 @@ Setup
 
 		<?php $this->endWidget(); ?>
 
-Код контроллера
+Controller source:
 
 	    public function actionEdit($id = null)
     	{
@@ -85,6 +85,3 @@ Setup
     		}
     		$this->render('edit', array('model' => $myModel));
     	}
-
-
-
