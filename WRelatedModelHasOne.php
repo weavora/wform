@@ -13,11 +13,20 @@ class WRelatedModelHasOne {
 	public $model;
 
 	public function setAttributes($attributes) {
+		$relationClass = $this->relationInfo[WRelatedModel::RELATION_CLASS];
+		
+		if (!$this->model->{$this->relationName})
+			$this->model->{$this->relationName} = new $relationClass();
 		$this->model->{$this->relationName}->attributes = $attributes;
 	}
 
 	public function validate() {
-		return $this->model->{$this->relationName}->validate();
+		$relationClass = $this->relationInfo[WRelatedModel::RELATION_CLASS];
+
+		// @todo what if we define relation into behavior but it absent into form ?
+		if (!$this->model->{$this->relationName})
+			$this->model->{$this->relationName} = new $relationClass();
+		return  $this->model->{$this->relationName}->validate();
 	}
 
 	public function save() {
