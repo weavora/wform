@@ -88,10 +88,27 @@ class MyModel extends WActiveRecord {
 	public function behaviors() {
 		return array(
 			// attach wform behavior
-			'WFormBehavior' => array(
+			'wform' => array(
 				'class' => 'ext.wform.WFormBehavior',
 				// define relations which would be processed
 				'relations' => array('hasOneRelation', 'belongsToRelation', 'hasManyRelation', 'manyManyRelation'),
+			),
+			// or attach wform behavior only to specified scenarios
+			'wform' => array(
+				'class' => 'ext.wform.WFormBehavior',
+				// by default behavior attached to all scenarios
+				'scenarios' => array('insert', 'update', 'someCustomScenario'),
+				'relations' => array('hasOneRelation', 'belongsToRelation', 'hasManyRelation', 'manyManyRelation'),
+			),
+			// or you could allow to skip some relation saving if it was submitted empty
+			'wform' => array(
+				'class' => 'ext.wform.WFormBehavior',
+				'relations' => array(
+					'hasOneRelation' => array('skipIfEmpty' => true), // default for HAS_ONE: false
+					'belongsToRelation' => array('skipIfEmpty' => true), // default for BELONGS_TO: false
+					'hasManyRelation' => array('skipIfEmpty' => false), // default for HAS_MANY: true
+					'manyManyRelation => array('skipIfEmpty' => false), // default for MANY_MANY: true
+				),
 			),
 		);
 	}
@@ -214,15 +231,5 @@ class MyController extends Controller {
 Real Example
 -----
 
-... long example with images and different options here ...
-
-F.A.Q.
------
-
-*1) How to attach wform behavior only to specified scenario?*
-
-... example ...
-
-*2) How to skip empty relation model validation (e.g. if we didn't fill up category, it wouldn't created, but validation will be passed)
-
-... example ...
+... real example huge product form ...
+... maybe it would be a separate page ...
