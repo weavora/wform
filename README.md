@@ -19,6 +19,7 @@ Configuration
 2) There are config settings for import section below:
 
 ```php
+<?php
 // main.php
 return array(
 	...
@@ -37,6 +38,7 @@ a) Extend all your models/forms from WActiveRecord instead of CActiveRecord
 b) If you already has modified class for active record, then extend it from WActiveRecord or add onUnsafeAttribute method:
 
 ```php
+<?php
 // protected/components/ActiveRecord.php
 
 // extend from WActiveRecord
@@ -73,6 +75,7 @@ Usage
 You can also create separate class for form extended from your model.
 
 ```php
+<?php
 class MyModel extends WActiveRecord {
 	...
 	public function relations()
@@ -107,7 +110,7 @@ class MyModel extends WActiveRecord {
 					'hasOneRelation' => array('skipIfEmpty' => true), // default for HAS_ONE: false
 					'belongsToRelation' => array('skipIfEmpty' => true), // default for BELONGS_TO: false
 					'hasManyRelation' => array('skipIfEmpty' => false), // default for HAS_MANY: true
-					'manyManyRelation => array('skipIfEmpty' => false), // default for MANY_MANY: true
+					'manyManyRelation' => array('skipIfEmpty' => false), // default for MANY_MANY: true
 				),
 			),
 		);
@@ -119,6 +122,7 @@ class MyModel extends WActiveRecord {
 2) Create action to process form.
 
 ```php
+<?php
 class MyController extends Controller {
 	...
 	// form create & edit processed by single action
