@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-class ActiveRecord extends CActiveRecord {
+class WActiveRecord extends CActiveRecord {
 
 	// @todo any ideas how to prevent using custom event for that ?
 	public function onUnsafeAttribute($name, $value)
