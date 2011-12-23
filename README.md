@@ -209,6 +209,7 @@ class MyController extends Controller {
 </div>
 
 <?php $this->endWidget(); ?>
+```
 
 Real Example
 -----
@@ -225,4 +226,3 @@ F.A.Q.
 *2) How to skip empty relation model validation (e.g. if we didn't fill up category, it wouldn't created, but validation will be passed)
 
 ... example ...
-
