@@ -82,9 +82,9 @@ class MyModel extends WActiveRecord {
 	{
 		return array(
 			'hasOneRelation' => array(self::HAS_ONE, 'HasOneModel', 'my_model_fk_into_related_model'),
-			'belongsToRelation' => array(self::HAS_ONE, 'BelongsToModel', 'related_model_fk_into_my_model'),
+			'belongsToRelation' => array(self::BELONGS_TO, 'BelongsToModel', 'related_model_fk_into_my_model'),
 			'hasManyRelation' => array(self::HAS_MANY, 'HasManyModel', 'my_model_fk_into_related_model'),
-			'manyManyRelation' => array(self::HAS_MANY, 'ManyManyModel', 'linker(my_model_id,related_model_id)'),
+			'manyManyRelation' => array(self::MANY_MANY, 'ManyManyModel', 'linker(my_model_id,related_model_id)'),
 		);
 	}
 	...
