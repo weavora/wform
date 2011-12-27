@@ -35,7 +35,12 @@ class WFormRelationHasMany extends WFormRelation {
 
 	public function validate() {
 		$isValid = true;
-		foreach ($this->getRelatedModels() as $relationModel) {
+
+		$relatedModels = $this->getRelatedModels();
+		if (count($relatedModels) == 0 && $this->required)
+			return false;
+
+		foreach ($relatedModels as $relationModel) {
 			$isValid = $relationModel->validate() && $isValid;
 		}
 		return $isValid;
@@ -44,8 +49,12 @@ class WFormRelationHasMany extends WFormRelation {
 	public function save() {
 		$foreignKey = $this->info[WFormRelation::RELATION_FOREIGN_KEY];
 
+		$relatedModels = $this->getRelatedModels();
+		if (count($relatedModels) == 0 && $this->required)
+			return false;
+
 		$isSuccess = true;
-		foreach ($this->getRelatedModels() as $index => $relationModel) {
+		foreach ($relatedModels as $index => $relationModel) {
 			$relationModel->$foreignKey = $this->model->primaryKey;
 			$isSuccess = $relationModel->save() && $isSuccess;
 		}

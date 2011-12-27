@@ -12,6 +12,11 @@ class WFormBehavior extends CActiveRecordBehavior {
 	 */
 	public $relations = array();
 
+	/**
+	 * @var array scenarios to behavior will be applied
+	 */
+	public $scenarios = array('*');
+
 	protected $relatedModels = array();
 
 	/**
@@ -87,7 +92,6 @@ class WFormBehavior extends CActiveRecordBehavior {
 	public function afterValidate($event) {
 		$model = $event->sender;
 		foreach ($this->relatedModels as $relatedModel) {
-//			if (!is_null($relatedModel->attributes) && !$relatedModel->validate()) {
 			if (!$relatedModel->validate()) {
 				$model->addError($relatedModel->name, $relatedModel->name . ' is not valid');
 			}

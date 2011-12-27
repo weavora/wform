@@ -9,29 +9,46 @@ class WFormRelationHasOne extends WFormRelation {
 
 	public $type = CActiveRecord::HAS_ONE;
 
+	public $required = true;
+
 	public function setAttributes($attributes) {
 		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
 		
-		if (!$this->model->{$this->name})
-			$this->model->{$this->name} = new $relationClass();
-		$this->model->{$this->name}->attributes = $attributes;
+		$relationModel = $this->_getModel();
+		$relationModel->attributes = $attributes;
 	}
 
 	public function validate() {
-		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
+		$relationModel = $this->_getModel($this->required);
 
-		// @todo what if we define relation into behavior but it absent into form ?
-		if (!$this->model->{$this->name})
-			$this->model->{$this->name} = new $relationClass();
-		return  $this->model->{$this->name}->validate();
+		if (is_null($relationModel) && !$this->required)
+			return true;
+
+		return  $relationModel->validate();
 	}
 
 	public function save() {
+		$relationModel = $this->_getModel($this->required);
+
+		if (is_null($relationModel) && !$this->required)
+			return true;
+
 		$foreignKey = $this->info[WFormRelation::RELATION_FOREIGN_KEY];
-		$this->model->{$this->name}->$foreignKey = $this->model->primaryKey;
+		$relationModel->$foreignKey = $this->model->primaryKey;
 		
-		return $this->model->{$this->name}->save();
+		return $relationModel->save();
 	}
 
+	protected function _getModel($createNewIfEmpty = true) {
+		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
 
+		if (!$this->model->{$this->name}) {
+			if (!$createNewIfEmpty)
+				return null;
+
+			$this->model->{$this->name} = new $relationClass();
+		}
+
+		return $this->model->{$this->name};
+	}
 }

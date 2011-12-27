@@ -9,12 +9,19 @@ class WFormRelationBelongsTo extends WFormRelationHasOne {
 
 	public $type = CActiveRecord::BELONGS_TO;
 
+	public $required = true;
+
 	public function save() {
-		if (!$this->model->{$this->name}->save())
+		$relationModel = $this->_getModel($this->required);
+
+		if (is_null($relationModel) && !$this->required)
+			return true;
+
+		if (!$relationModel->save())
 			return false;
 
 		$foreignKey = $this->info[WFormRelation::RELATION_FOREIGN_KEY];
-		$this->model->{$foreignKey} = $this->model->{$this->name}->primaryKey;
+		$this->model->{$foreignKey} = $relationModel->primaryKey;
 		
 		return true;
 	}

@@ -14,8 +14,12 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 		if (!$this->_unlink())
 			return false;
 
+		$relatedModels = $this->getRelatedModels();
+		if (count($relatedModels) == 0 && $this->required)
+			return false;
+
 		$isSuccess = true;
-		foreach ($this->getRelatedModels() as $index => $relationModel) {
+		foreach ($relatedModels as $index => $relationModel) {
 			if ($relationModel->save()) {
 				$isSuccess = $this->_linkTo($relationModel) && $isSuccess;
 			} else {

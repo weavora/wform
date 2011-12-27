@@ -107,10 +107,10 @@ class MyModel extends WActiveRecord {
 			'wform' => array(
 				'class' => 'ext.wform.WFormBehavior',
 				'relations' => array(
-					'hasOneRelation' => array('skipIfEmpty' => true), // default for HAS_ONE: false
-					'belongsToRelation' => array('skipIfEmpty' => true), // default for BELONGS_TO: false
-					'hasManyRelation' => array('skipIfEmpty' => false), // default for HAS_MANY: true
-					'manyManyRelation' => array('skipIfEmpty' => false), // default for MANY_MANY: true
+					'hasOneRelation' => array('required' => true), // default for HAS_ONE: false
+					'belongsToRelation' => array('required' => true), // default for BELONGS_TO: false
+					'hasManyRelation' => array('required' => false), // default for HAS_MANY: true
+					'manyManyRelation' => array('required' => false), // default for MANY_MANY: true
 				),
 			),
 		);

@@ -11,12 +11,13 @@ class WFormRelation {
 	const RELATION_CLASS = 1;
 	const RELATION_FOREIGN_KEY = 2;
 
-	public $name = null;
-	public $info = null;
-	public $model = null;
-	public $type = null;
-
 	public $required = false;
+	public $allowEmpty = false;
+
+	public $name = null;
+	protected $info = null;
+	protected $model = null;
+	protected $type = null;
 
 	public static function getInstance($model, $relationName, $options = array()) {
 		if (!self::_isRelationExists($model, $relationName))
