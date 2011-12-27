@@ -66,6 +66,19 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
+	 * Save related models which affect to parent models
+	 * @return void
+	 */
+	public function beforeSave($event) {
+		foreach ($this->relatedModels as $relatedModel) {
+			if (in_array($relatedModel->type, array(CActiveRecord::BELONGS_TO))) {
+				if (!$relatedModel->save())
+					$event->isValid = false;
+			}
+		}
+	}
+
+	/**
 	 * Save related models which depends on parent model
 	 * @return void
 	 */
@@ -73,19 +86,6 @@ class WFormBehavior extends CActiveRecordBehavior {
 		foreach ($this->relatedModels as $relatedModel) {
 			if (in_array($relatedModel->type, array(CActiveRecord::HAS_ONE, CActiveRecord::HAS_MANY, CActiveRecord::MANY_MANY))) {
 				$relatedModel->save();
-			}
-		}
-	}
-
-	/**
-	 * Save related models which affect to parent models
-	 * @return void
-	 */
-	public function beforeSave($event) {
-		foreach ($this->relatedModels as $relatedModel) {
-			if (in_array($relatedModel->type, array(CActiveRecord::BELONGS_TO, CActiveRecord::MANY_MANY))) {
-				if (!$relatedModel->save())
-					$event->isValid = false;
 			}
 		}
 	}
