@@ -91,15 +91,6 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
-	 * Add relations to criteria.with
-	 * @param $event
-	 * @return void
-	 */
-	public function beforeFind($event) {
-		// @todo implement
-	}
-
-	/**
 	 * Rebuild related models
 	 * 
 	 * @param $parentModel
