@@ -179,7 +179,7 @@ class MyController extends Controller {
 	<?php if ($model->hasManyRelation): ?>
 		<?php foreach ($model->hasManyRelation as $index => $item): ?>
 			<div class="has-many-item">
-				<?php if ($item->isNewRecord): ?>
+				<?php if (!$item->isNewRecord): ?>
 					<?php echo $form->hiddenField($model, "hasManyRelation.$index.id"); ?>
 				<?php endif; ?>
 				<?php echo $form->labelEx($model, "hasManyRelation.$index.text"); ?>
@@ -205,7 +205,7 @@ class MyController extends Controller {
 	<?php if ($model->manyManyRelation): ?>
 		<?php foreach ($model->manyManyRelation as $index => $item): ?>
 			<div class="many-many-item">
-				<?php if ($item->isNewRecord): ?>
+				<?php if (!$item->isNewRecord): ?>
 					<?php echo $form->hiddenField($model, "manyManyRelation.$index.id"); ?>
 				<?php endif; ?>
 				<?php echo $form->labelEx($model, "manyManyRelation.$index.note"); ?>
