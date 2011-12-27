@@ -5,27 +5,60 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-// @todo TBD: I think it should be base class for related model types
 class WFormRelation {
 
 	const RELATION_TYPE = 0;
 	const RELATION_CLASS = 1;
 	const RELATION_FOREIGN_KEY = 2;
 
-	public static function getInstance($model, $relationName, $relationInfo) {
+	public $name = null;
+	public $info = null;
+	public $model = null;
+	public $type = null;
+
+	public $required = false;
+
+	public static function getInstance($model, $relationName, $options = array()) {
+		if (!self::_isRelationExists($model, $relationName))
+			return null;
+
+		$relationInfo = self::getRelationInfo($model, $relationName);
+
 		switch($relationInfo[self::RELATION_TYPE]) {
-			case CActiveRecord::HAS_ONE: $relatedModel = new WFormRelationHasOne(); break;
-			case CActiveRecord::HAS_MANY: $relatedModel = new WFormRelationHasMany(); break;
-			case CActiveRecord::BELONGS_TO: $relatedModel = new WFormRelationBelongsTo(); break;
-			case CActiveRecord::MANY_MANY: $relatedModel = new WFormRelationManyMany(); break;
+			case CActiveRecord::HAS_ONE: $relation = new WFormRelationHasOne(); break;
+			case CActiveRecord::HAS_MANY: $relation = new WFormRelationHasMany(); break;
+			case CActiveRecord::BELONGS_TO: $relation = new WFormRelationBelongsTo(); break;
+			case CActiveRecord::MANY_MANY: $relation = new WFormRelationManyMany(); break;
 		}
 
-		$relatedModel->model = $model;
-		$relatedModel->relationName = $relationName;
-		$relatedModel->relationInfo = $relationInfo;
+		$options['model'] = $model;
+		$options['name'] = $relationName;
+		$options['info'] = $relationInfo;
 
-		return $relatedModel;
+		$relation->setOptions($options);
+
+		return $relation;
 	}
 
-	
+	public function __construct($options = array()) {
+		$this->setOptions($options);
+	}
+
+	public function setOptions($options) {
+		foreach($options as $key => $value) {
+			if (property_exists($this, $key)) {
+				$this->{$key} = $value;
+			}
+		}
+	}
+
+	public static function getRelationInfo($model, $relationName) {
+		$relations = $model->relations();
+		return $relations[$relationName];
+	}
+
+	protected static function _isRelationExists($model, $relationName) {
+		$relations = $model->relations();
+		return array_key_exists($relationName, $relations);
+	}
 }

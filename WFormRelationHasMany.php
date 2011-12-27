@@ -5,15 +5,12 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-class WFormRelationHasMany {
+class WFormRelationHasMany extends WFormRelation {
 
 	public $type = CActiveRecord::HAS_MANY;
-	public $relationName;
-	public $relationInfo;
-	public $model;
 
 	public function setAttributes($bunchOfAttributes) {
-		$relationClass = $this->relationInfo[WFormRelation::RELATION_CLASS];
+		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
 		$relationPk = $relationClass::model()->getMetaData()->tableSchema->primaryKey;
 		
 		$modelsDictionary = array();
@@ -33,7 +30,7 @@ class WFormRelationHasMany {
 			$relationModel->attributes = $attributes;
 			$relationModels[] = $relationModel;
 		}
-		$this->model->{$this->relationName} = $relationModels;
+		$this->model->{$this->name} = $relationModels;
 	}
 
 	public function validate() {
@@ -45,7 +42,7 @@ class WFormRelationHasMany {
 	}
 
 	public function save() {
-		$foreignKey = $this->relationInfo[WFormRelation::RELATION_FOREIGN_KEY];
+		$foreignKey = $this->info[WFormRelation::RELATION_FOREIGN_KEY];
 
 		$isSuccess = true;
 		foreach ($this->getRelatedModels() as $index => $relationModel) {
@@ -56,9 +53,9 @@ class WFormRelationHasMany {
 	}
 
 	public function getRelatedModels() {
-		if (!$this->model->{$this->relationName})
+		if (!$this->model->{$this->name})
 			return array();
 
-		return (array) $this->model->{$this->relationName};
+		return (array) $this->model->{$this->name};
 	}
 }

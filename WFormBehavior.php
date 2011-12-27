@@ -38,7 +38,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Rebuild related models
-	 * 
+	 *
 	 * @param $event
 	 * @return void
 	 */
@@ -87,8 +87,9 @@ class WFormBehavior extends CActiveRecordBehavior {
 	public function afterValidate($event) {
 		$model = $event->sender;
 		foreach ($this->relatedModels as $relatedModel) {
+//			if (!is_null($relatedModel->attributes) && !$relatedModel->validate()) {
 			if (!$relatedModel->validate()) {
-				$model->addError($relatedModel->relationName, $relatedModel->relationName . ' is not valid');
+				$model->addError($relatedModel->name, $relatedModel->name . ' is not valid');
 			}
 		}
 	}
@@ -161,12 +162,16 @@ class WFormBehavior extends CActiveRecordBehavior {
 	 * @return void
 	 */
 	protected function _buildRelatedModel($parentModel) {
-		$parentRelations = $parentModel->relations();
 		$this->relatedModels = array();
-		foreach ($this->relations as $relation) {
-			if (array_key_exists($relation, $parentRelations)) {
-				$this->relatedModels[$relation] = WFormRelation::getInstance($parentModel, $relation, $parentRelations[$relation]);
+		foreach ($this->relations as $relation => $options) {
+			if (is_numeric($relation)) {
+				$relation = $options;
+				$options = array();
 			}
+
+			if (($relationModel = WFormRelation::getInstance($parentModel, $relation, $options)) !== null)
+				$this->relatedModels[$relation] = $relationModel;
+
 		}
 	}
 }

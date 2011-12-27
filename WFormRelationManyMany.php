@@ -34,7 +34,7 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 	 * @return bool
 	 */
 	protected function _linkTo($relatedModel) {
-		$foreignKey = $this->_parseForeignKey($this->relationInfo[WFormRelation::RELATION_FOREIGN_KEY]);
+		$foreignKey = $this->_parseForeignKey($this->info[WFormRelation::RELATION_FOREIGN_KEY]);
 
 		try {
 			$sql = "INSERT INTO {$foreignKey['table']} ({$foreignKey['model_fk']}, {$foreignKey['relation_fk']}) VALUES (:model_fk,:relation_fk)";
@@ -57,7 +57,7 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 	 * @return bool
 	 */
 	protected function _unlink() {
-		$foreignKey = $this->_parseForeignKey($this->relationInfo[WFormRelation::RELATION_FOREIGN_KEY]);
+		$foreignKey = $this->_parseForeignKey($this->info[WFormRelation::RELATION_FOREIGN_KEY]);
 
 		try {
 			$sql = "DELETE FROM {$foreignKey['table']} WHERE {$foreignKey['model_fk']} = :model_fk";

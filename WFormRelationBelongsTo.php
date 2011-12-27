@@ -10,11 +10,11 @@ class WFormRelationBelongsTo extends WFormRelationHasOne {
 	public $type = CActiveRecord::BELONGS_TO;
 
 	public function save() {
-		if (!$this->model->{$this->relationName}->save())
+		if (!$this->model->{$this->name}->save())
 			return false;
 
-		$foreignKey = $this->relationInfo[WFormRelation::RELATION_FOREIGN_KEY];
-		$this->model->{$foreignKey} = $this->model->{$this->relationName}->primaryKey;
+		$foreignKey = $this->info[WFormRelation::RELATION_FOREIGN_KEY];
+		$this->model->{$foreignKey} = $this->model->{$this->name}->primaryKey;
 		
 		return true;
 	}
