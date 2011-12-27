@@ -51,6 +51,11 @@ class WFormBehavior extends CActiveRecordBehavior {
 		}
 	}
 
+	public function beforeValidate($event) {
+		$model = $event->sender;
+		$this->_processFilesRecursive($model);
+	}
+
 	/**
 	 * Validate related models
 	 * @param $event
@@ -67,6 +72,8 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Save related models which affect to parent models
+	 *
+	 * @param $event
 	 * @return void
 	 */
 	public function beforeSave($event) {
@@ -80,6 +87,8 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Save related models which depends on parent model
+	 *
+	 * @param $event
 	 * @return void
 	 */
 	public function afterSave($event) {
@@ -104,5 +113,62 @@ class WFormBehavior extends CActiveRecordBehavior {
 				$this->relatedModels[$relation] = WFormRelation::getInstance($parentModel, $relation, $parentRelations[$relation]);
 			}
 		}
+	}
+
+	protected function _processFilesRecursive($parentModel, $path = "", $files = null) {
+		if (is_null($files) && isset($_FILES[get_class($parentModel)])) {
+			$files = $this->_normalizeFilesRequest($_FILES[get_class($parentModel)]);
+		}
+
+		if (empty($files) || !is_array($files))
+			return true;
+
+		foreach($files as $key => $subFiles) {
+			if ($this->_isFile($subFiles)) {
+				if (($model = $this->_getModelByPath($parentModel, $path)) !== null) {
+					$model->setAttribute($key, new CUploadedFile($subFiles['name'], $subFiles['tmp_name'], $subFiles['type'], $subFiles['size'], $subFiles['error']));
+				}
+			} else {
+				$this->_processFilesRecursive($parentModel, $path . "." . $key, $subFiles);
+			}
+		}
+
+		return true;
+	}
+
+	protected function _getModelByPath($parentModel, $path) {
+		$model = $parentModel;
+		$pathPortions = explode(".", trim($path, "."));
+		foreach($pathPortions as $portion) {
+			if (empty($model[$portion]))
+				return null;
+
+			$model = $model[$portion];
+		}
+		return $model;
+	}
+
+	protected function _normalizeFilesRequest($files) {
+		$normalizedFiles =  array();
+		foreach($files as $key => $value) {
+			if (is_array($value)) {
+				foreach($value as $k=>$v) {
+					$normalizedFiles[$k][$key] = $v;
+				}
+			} else {
+				$normalizedFiles[$key] = $value;
+			}
+		}
+
+		foreach($normalizedFiles as $k => $v) {
+			if (is_array($v))
+				$normalizedFiles[$k] = $this->_normalizeFilesRequest($v);
+		}
+
+		return $normalizedFiles;
+	}
+
+	protected function _isFile($data) {
+		return !empty($data['name']) && !empty($data['tmp_name']) && !empty($data['size']) && isset($data['error']);
 	}
 }
