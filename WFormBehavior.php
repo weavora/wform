@@ -14,6 +14,11 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	protected $relatedModels = array();
 
+	/**
+	 * Extend standard AR behavior events
+	 *
+	 * @return array
+	 */
 	public function events() {
 		return array_merge(parent::events(), array(
 			// @todo any ideas how to prevent using custom event for that ? Maybe create attributes dynamic for relations?
@@ -23,6 +28,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Initialize related models
+	 *
 	 * @param $event
 	 * @return void
 	 */
@@ -32,6 +38,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Rebuild related models
+	 * 
 	 * @param $event
 	 * @return void
 	 */
@@ -41,6 +48,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Set related models attributes
+	 *
 	 * @param $event
 	 * @return void
 	 */
@@ -51,13 +59,28 @@ class WFormBehavior extends CActiveRecordBehavior {
 		}
 	}
 
+	/**
+	 * Handle file inputs
+	 *
+	 * @param $event
+	 */
 	public function beforeValidate($event) {
 		$model = $event->sender;
-		$this->_processFilesRecursive($model);
+
+		// create CUploadedFile for all file inputs
+		$files = new WFileIterator($model);
+		foreach($files as $path => $file) {
+			$model = $this->findRelationByPath($model, $path);
+			$attribute = $this->findPathAttribute($path);
+			if ($model) {
+				$model->setAttribute($attribute, $file);
+			}
+		}
 	}
 
 	/**
 	 * Validate related models
+	 *
 	 * @param $event
 	 * @return void
 	 */
@@ -100,6 +123,38 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
+	 * Find related model by path (e.g. categories.0.name)
+	 *
+	 * @param $parentModel parent model
+	 * @param $path path
+	 * @return CActiveRecord
+	 */
+	public function findRelationByPath($parentModel, $path) {
+		$model = $parentModel;
+		$pathPortions = explode(".", trim($path, "."));
+		if (count($pathPortions)) {
+			$attribute = array_pop($pathPortions);
+		}
+		foreach($pathPortions as $portion) {
+			if (empty($model[$portion]))
+				return null;
+			$model = $model[$portion];
+		}
+		return $model;
+	}
+
+	/**
+	 * Find attribute name into path (e.g. categories.0.name)
+	 *
+	 * @param $path path
+	 * @return string attribute name
+	 */
+	public function findPathAttribute($path) {
+		$pathPortions = explode(".", trim($path, "."));
+		return count($pathPortions) ? end($pathPortions) : null;
+	}
+
+	/**
 	 * Rebuild related models
 	 * 
 	 * @param $parentModel
@@ -113,62 +168,5 @@ class WFormBehavior extends CActiveRecordBehavior {
 				$this->relatedModels[$relation] = WFormRelation::getInstance($parentModel, $relation, $parentRelations[$relation]);
 			}
 		}
-	}
-
-	protected function _processFilesRecursive($parentModel, $path = "", $files = null) {
-		if (is_null($files) && isset($_FILES[get_class($parentModel)])) {
-			$files = $this->_normalizeFilesRequest($_FILES[get_class($parentModel)]);
-		}
-
-		if (empty($files) || !is_array($files))
-			return true;
-
-		foreach($files as $key => $subFiles) {
-			if ($this->_isFile($subFiles)) {
-				if (($model = $this->_getModelByPath($parentModel, $path)) !== null) {
-					$model->setAttribute($key, new CUploadedFile($subFiles['name'], $subFiles['tmp_name'], $subFiles['type'], $subFiles['size'], $subFiles['error']));
-				}
-			} else {
-				$this->_processFilesRecursive($parentModel, $path . "." . $key, $subFiles);
-			}
-		}
-
-		return true;
-	}
-
-	protected function _getModelByPath($parentModel, $path) {
-		$model = $parentModel;
-		$pathPortions = explode(".", trim($path, "."));
-		foreach($pathPortions as $portion) {
-			if (empty($model[$portion]))
-				return null;
-
-			$model = $model[$portion];
-		}
-		return $model;
-	}
-
-	protected function _normalizeFilesRequest($files) {
-		$normalizedFiles =  array();
-		foreach($files as $key => $value) {
-			if (is_array($value)) {
-				foreach($value as $k=>$v) {
-					$normalizedFiles[$k][$key] = $v;
-				}
-			} else {
-				$normalizedFiles[$key] = $value;
-			}
-		}
-
-		foreach($normalizedFiles as $k => $v) {
-			if (is_array($v))
-				$normalizedFiles[$k] = $this->_normalizeFilesRequest($v);
-		}
-
-		return $normalizedFiles;
-	}
-
-	protected function _isFile($data) {
-		return !empty($data['name']) && !empty($data['tmp_name']) && !empty($data['size']) && isset($data['error']);
 	}
 }
