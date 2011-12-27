@@ -18,6 +18,8 @@ class WForm extends CActiveForm
 	{
 		list($model, $attribute, $htmlOptions) = self::resolveArgs($parentModel, $attributedPath, $htmlOptions);
 		$htmlOptions['for'] = CHtml::getIdByName($htmlOptions['name']);
+		if (($label = self::resolveLabel($parentModel, $attributedPath)) !== null)
+			$htmlOptions['label'] = $label;
 		return parent::label($model, $attribute, $htmlOptions);
 	}
 
@@ -32,6 +34,8 @@ class WForm extends CActiveForm
 	{
 		list($model, $attribute, $htmlOptions) = self::resolveArgs($parentModel, $attributedPath, $htmlOptions);
 		$htmlOptions['for'] = CHtml::getIdByName($htmlOptions['name']);
+		if (($label = self::resolveLabel($parentModel, $attributedPath)) !== null)
+			$htmlOptions['label'] = $label;
 		return parent::labelEx($model, $attribute, $htmlOptions);
 	}
 
@@ -265,6 +269,13 @@ class WForm extends CActiveForm
 			$htmlOptions['name'] = self::resolveName($parentModel, $attributedPath);
 
 		return array($model, $attribute, $htmlOptions);
+	}
+
+	public static function resolveLabel($parentModel, $attributedPath)
+	{
+		$attribute = str_replace('..','.', $attributedPath);
+		return $parentModel->getAttributeLabel($attribute);
+//		return null;
 	}
 
 	protected static function createRelationModel($model, $relation, $allowMany = false)
