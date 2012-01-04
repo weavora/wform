@@ -13,6 +13,7 @@ class WFormRelation {
 
 	public $required = false;
 	public $allowEmpty = false;
+	public $unsetInvalid = false;
 
 	public $name = null;
 	protected $info = null;

@@ -208,10 +208,9 @@ class WForm extends CActiveForm
 	{
 		$model = $parentModel;
 		$pathPortions = explode('.', $attributedPath);
-		
+
 		// last portion is always model attribute
 		$attribute = array_pop($pathPortions);
-
 		foreach ($pathPortions as $index => $portion) {
 			// handle 'parent.statuses..id'
 			if ($portion == '') {
@@ -230,6 +229,7 @@ class WForm extends CActiveForm
 			}
 				// handle 'parent.status' when status relation is empty (new model required)
 			elseif (empty($model->{$portion})) {
+
 				$nextModel = self::createRelationModel($model, $portion, true);
 			}
 				// handle 'parent.status'
@@ -250,6 +250,8 @@ class WForm extends CActiveForm
 		$name = get_class($parentModel);
 		$pathPortions = explode('.', $attributedPath);
 		foreach ($pathPortions as $key => $pathPortion) {
+			if ($pathPortion === '')
+				$pathPortion = '{index}';
 			$name .= '[' . $pathPortion . ']';
 		}
 		return $name;
@@ -275,7 +277,6 @@ class WForm extends CActiveForm
 	{
 		$attribute = str_replace('..','.', $attributedPath);
 		return $parentModel->getAttributeLabel($attribute);
-//		return null;
 	}
 
 	protected static function createRelationModel($model, $relation, $allowMany = false)
@@ -292,7 +293,7 @@ class WForm extends CActiveForm
 		} else {
 			$model = new $relationModelClass();
 		}
-		
+
 		return $model;
 	}
 }

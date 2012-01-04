@@ -10,6 +10,7 @@ class WFormRelationHasMany extends WFormRelation {
 	public $type = CActiveRecord::HAS_MANY;
 
 	public function setAttributes($bunchOfAttributes) {
+
 		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
 		$relationPk = $relationClass::model()->getMetaData()->tableSchema->primaryKey;
 		
@@ -21,14 +22,14 @@ class WFormRelationHasMany extends WFormRelation {
 		}
 
 		$relationModels = array();
-		foreach ($bunchOfAttributes as $attributes) {
+		foreach ($bunchOfAttributes as $key => $attributes) {
 			if (isset($attributes[$relationPk]) && isset($modelsDictionary[$attributes[$relationPk]])) {
 				$relationModel = $modelsDictionary[$attributes[$relationPk]];
 			} else {
 				$relationModel = new $relationClass();
 			}
 			$relationModel->attributes = $attributes;
-			$relationModels[] = $relationModel;
+			$relationModels[$key] = $relationModel;
 		}
 		$this->model->{$this->name} = $relationModels;
 	}
@@ -40,9 +41,18 @@ class WFormRelationHasMany extends WFormRelation {
 		if (count($relatedModels) == 0 && $this->required)
 			return false;
 
-		foreach ($relatedModels as $relationModel) {
-			$isValid = $relationModel->validate() && $isValid;
+		foreach ($relatedModels as $key => $relationModel) {
+			if (!$relationModel->validate()) {
+				if ($this->unsetInvalid) {
+					unset($relatedModels[$key]);
+					$this->model->{$this->name} = $relatedModels;
+				} else {
+					$isValid = false;
+				}
+			}
+//			$isValid = $relationModel->validate() && $isValid;
 		}
+
 		return $isValid;
 	}
 
@@ -58,6 +68,7 @@ class WFormRelationHasMany extends WFormRelation {
 			$relationModel->$foreignKey = $this->model->primaryKey;
 			$isSuccess = $relationModel->save() && $isSuccess;
 		}
+
 		return $isSuccess;
 	}
 
