@@ -75,10 +75,10 @@ class WFormBehavior extends CActiveRecordBehavior {
 		// create CUploadedFile for all file inputs
 		$files = new WFileIterator($model);
 		foreach($files as $path => $file) {
-			$model = $this->findRelationByPath($model, $path);
+			$relation = $this->findRelationByPath($model, $path);
 			$attribute = $this->findPathAttribute($path);
-			if ($model) {
-				$model->setAttribute($attribute, $file);
+			if ($relation) {
+				$relation->setAttribute($attribute, $file);
 			}
 		}
 	}
@@ -140,6 +140,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 		if (count($pathPortions)) {
 			$attribute = array_pop($pathPortions);
 		}
+
 		foreach($pathPortions as $portion) {
 			if (empty($model[$portion]))
 				return null;
@@ -161,7 +162,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	/**
 	 * Rebuild related models
-	 * 
+	 *
 	 * @param $parentModel
 	 * @return void
 	 */
