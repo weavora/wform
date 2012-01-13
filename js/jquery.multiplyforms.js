@@ -6,27 +6,23 @@
         self.el = el;
         self.formCount = 100;
 
-        // Add a reverse reference to the DOM object
         self.$el.data("multiplyForms", self);
 
-        self.init = function(){
+        self.init = function() {
             self.options = $.extend({},$.multiplyForms.defaultOptions, options);
-
-			$(self.options.initialForm).find('input').attr('disabled', 'disabled');
-			
+			$(self.options.initialForm).find('input, textarea, select, button').attr('disabled', 'disabled');
 			$(self.options.addLink).click(function(e) {
+				e.preventDefault();
 				var $newForm = self.$el.find(self.options.initialForm)
 					.clone(false)
-					.show()
-					.find('input')
+					.find('input, textarea, select, button')
 						.removeAttr('disabled')
 					.end()
-				.appendTo(self.el);
+				.appendTo(self.el).show();
 				self._updateIndex($newForm);
-			});
-
-			$(self.options.deleteLink).click(function(e) {
-				console.log('delete');
+				if (typeof(self.options.afterAdd) == 'function') {
+				    self.options.afterAdd.call(this, $newForm);
+				}
 			});
         };
 
@@ -37,12 +33,10 @@
 				this.name = this.name.replace('{index}', self.formCount);
 				this.id = this.id.replace('{index}', self.formCount);
 			});
-
 			$form.find('.delete').click(function(e) {
-				console.log('delete-new');
+				e.preventDefault();
 				$('#'+formId).remove();
 			});
-
 			self.formCount++;
         };
 
@@ -57,11 +51,11 @@
 
     $.multiplyForms.defaultOptions = {
     	addLink: ".add-link",
-    	deleteLinkClass: "delete",
-    	initialForm: ""
+    	initialForm: "",
+    	afterAdd: undefined
     };
 
-    $.fn.multiplyForms = function(options){
+    $.fn.multiplyForms = function(options) {
         return this.each(function(){
             (new $.multiplyForms(this, options));
         });
