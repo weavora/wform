@@ -28,18 +28,20 @@ class WFileIterator extends CMap {
 		while(!$complete) {
 			$complete = true;
 			foreach($files as $key => $file) {
-				if (!$this->_isFile($file)) {
-					$complete = false;
-					if (is_array($file)) {
-						foreach($file as $subKey => $subFile) {
-							$files[$key . '.' . $subKey] = $subFile;
+				if (!($file instanceof CUploadedFile)) {
+					if (!$this->_isFile($file)) {
+						$complete = false;
+						if (is_array($file)) {
+							foreach($file as $subKey => $subFile) {
+								$files[$key . '.' . $subKey] = $subFile;
+							}
 						}
+						unset($files[$key]);
+					} elseif ($file['error'] != UPLOAD_ERR_OK) {
+						unset($files[$key]);
+					} else {
+						$files[$key] = new CUploadedFile($file['name'], $file['tmp_name'], $file['type'], $file['size'], $file['error']);
 					}
-					unset($files[$key]);
-				} elseif ($file['error'] != UPLOAD_ERR_OK) {
-					unset($files[$key]);
-				} else {
-					$files[$key] = new CUploadedFile($file['name'], $file['tmp_name'], $file['type'], $file['size'], $file['error']);
 				}
 			}
 		}
