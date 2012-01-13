@@ -174,7 +174,7 @@ class MyController extends Controller {
 </div>
 
 <!-- has_many relation -->
-<div class="row">
+<div class="row hasManyRelation">
 	<!-- exists items -->
 	<?php if ($model->hasManyRelation): ?>
 		<?php foreach ($model->hasManyRelation as $index => $item): ?>
@@ -185,22 +185,24 @@ class MyController extends Controller {
 				<?php echo $form->labelEx($model, "hasManyRelation.$index.text"); ?>
 				<?php echo $form->textField($model, "hasManyRelation.$index.text"); ?>
 				<?php echo $form->error($model, "hasManyRelation.$index.text"); ?>
+				<a href="#" class="delete">Delete</a>
 			</div>
 		<?php endforeach ?>
 	<?php endif; ?>
 
 	<!-- create new items -->
-	<div class="has-many-item just-empty-form-template">
+	<div class="has-many-item just-empty-form-template-hasManyRelation">
 		<?php echo $form->labelEx($model, "hasManyRelation..text"); ?>
 		<?php echo $form->textField($model, "hasManyRelation..text"); ?>
 		<?php echo $form->error($model, "hasManyRelation..text"); ?>
+		<a href="#" class="delete">Delete</a>
 	</div>
-	
-	<a href="#" onclick="cloneHasManyItemTemplate();">Add more</a>
+
+	<a href="#" class="add">Add more</a>
 </div>
 
 <!-- many_many relation -->
-<div class="row">
+<div class="row manyManyRelation">
 	<!-- exists items -->
 	<?php if ($model->manyManyRelation): ?>
 		<?php foreach ($model->manyManyRelation as $index => $item): ?>
@@ -211,18 +213,20 @@ class MyController extends Controller {
 				<?php echo $form->labelEx($model, "manyManyRelation.$index.note"); ?>
 				<?php echo $form->textField($model, "manyManyRelation.$index.note"); ?>
 				<?php echo $form->error($model, "manyManyRelation.$index.note"); ?>
+				<a href="#" class="delete">Delete</a>
 			</div>
 		<?php endforeach ?>
 	<?php endif; ?>
 
 	<!-- create new items -->
-	<div class="many-many-item just-empty-form-template">
+	<div class="many-many-item just-empty-form-template-manyManyRelation">
 		<?php echo $form->labelEx($model, "manyManyRelation..note"); ?>
 		<?php echo $form->textField($model, "manyManyRelation..note"); ?>
 		<?php echo $form->error($model, "manyManyRelation..note"); ?>
+		<a href="#" class="delete">Delete</a>
 	</div>
 
-	<a href="#" onclick="cloneManyManyItemTemplate();">Add more</a>
+	<a href="#" class="add">Add more</a>
 </div>
 
 <div class="row buttons">
@@ -230,6 +234,22 @@ class MyController extends Controller {
 </div>
 
 <?php $this->endWidget(); ?>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		// init controls for multiply forms
+		$('.manyManyRelation').multiplyForms({
+			template : $('.just-empty-form-template-manyManyRelation')
+		});
+
+		$('.hasManyRelation').multiplyForms({
+			template : $('.just-empty-form-template-hasManyRelation')
+		});
+
+	});
+</script>
+
+
 ```
 
 Real Example
