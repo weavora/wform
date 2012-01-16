@@ -22,15 +22,22 @@ class WFormRelationHasMany extends WFormRelation {
 		}
 
 		$relationModels = array();
+
 		foreach ($bunchOfAttributes as $key => $attributes) {
-			if (isset($attributes[$relationPk]) && isset($modelsDictionary[$attributes[$relationPk]])) {
-				$relationModel = $modelsDictionary[$attributes[$relationPk]];
+			if (isset($attributes[$relationPk])) {
+				if (isset($modelsDictionary[$attributes[$relationPk]])) {
+				    $relationModel = $modelsDictionary[$attributes[$relationPk]];
+				} else {
+					$relationModel = $relationClass::model()->findByPk($attributes[$relationPk]) ?: new $relationClass();
+				}
 			} else {
 				$relationModel = new $relationClass();
 			}
+
 			$relationModel->attributes = $attributes;
 			$relationModels[$key] = $relationModel;
 		}
+
 		$this->model->{$this->name} = $relationModels;
 	}
 
@@ -50,9 +57,7 @@ class WFormRelationHasMany extends WFormRelation {
 					$isValid = false;
 				}
 			}
-//			$isValid = $relationModel->validate() && $isValid;
 		}
-
 		return $isValid;
 	}
 

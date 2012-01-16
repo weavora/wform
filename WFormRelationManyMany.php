@@ -89,9 +89,9 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 		if (preg_match('/(?P<table>.*?)\((?P<model_fk>.*?),(?P<relation_fk>.*?)\)/is', $key, $matches))
 		{
 			return array(
-				'table' => Yii::app()->db->quoteTableName($matches['table']),
-				'model_fk' => Yii::app()->db->quoteColumnName($matches['model_fk']),
-				'relation_fk' => Yii::app()->db->quoteColumnName($matches['relation_fk']),
+				'table' => Yii::app()->db->quoteTableName(trim($matches['table'])),
+				'model_fk' => Yii::app()->db->quoteColumnName(trim($matches['model_fk'])),
+				'relation_fk' => Yii::app()->db->quoteColumnName(trim($matches['relation_fk'])),
 			);
 		}
 
