@@ -10,7 +10,13 @@
         self.init = function() {
             self.options = $.extend({},$.multiplyForms.defaultOptions, options);
 			$(self.options.template).find('input, textarea, select, button').attr('disabled', 'disabled');
-			$(self.options.addLink).click(function(e) {
+
+			// find add links inside self.element
+			var $addLinks = self.$el.find(self.options.addLink);
+			// find add links in document
+			$addLinks = $addLinks.length ? $addLinks : $(self.options.addLink);
+
+			$addLinks.click(function(e) {
 				e.preventDefault();
 				var $newElement = self.$el.find(self.options.template)
 					.clone(false)
@@ -18,7 +24,13 @@
 						.removeAttr('disabled')
 					.end()
 				.appendTo(self.el).show();
+				// if options.template is className then remove class
+				if (typeof self.options.template == "string" && self.options.template.indexOf('.') == 0) {
+				    $newElement.removeClass(self.options.template.replace('.', ' '));
+				}
+
 				self._updateIndex($newElement);
+				// afterAdd callback
 				if (typeof(self.options.afterAdd) == 'function') {
 				    self.options.afterAdd.call(this, $newElement);
 				}
@@ -35,6 +47,7 @@
 			$form.find(self.options.deleteLink).click(function(e) {
 				e.preventDefault();
 				var $element = $('#'+formId);
+				// beforeDelete callback
 				if (typeof(self.options.beforeDelete) == 'function') {
 				    self.options.beforeDelete.call(this, $element);
 				}
@@ -49,7 +62,7 @@
     $.multiplyForms.defaultOptions = {
     	addLink: ".add",
     	deleteLink: ".delete",
-    	template: "",
+    	template: ".template",
     	afterAdd: undefined,
     	beforeDelete: undefined
     };
