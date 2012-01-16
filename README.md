@@ -96,13 +96,6 @@ class MyModel extends WActiveRecord {
 				// define relations which would be processed
 				'relations' => array('hasOneRelation', 'belongsToRelation', 'hasManyRelation', 'manyManyRelation'),
 			),
-			// or attach wform behavior only to specified scenarios
-			'wform' => array(
-				'class' => 'ext.wform.WFormBehavior',
-				// by default behavior attached to all scenarios
-				'scenarios' => array('insert', 'update', 'someCustomScenario'),
-				'relations' => array('hasOneRelation', 'belongsToRelation', 'hasManyRelation', 'manyManyRelation'),
-			),
 			// or you could allow to skip some relation saving if it was submitted empty
 			'wform' => array(
 				'class' => 'ext.wform.WFormBehavior',
@@ -237,7 +230,7 @@ class MyController extends Controller {
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		// init controls for multiply forms
+		// init controls for multiply form
 		$('.manyManyRelation').multiplyForms({
 			template : $('.just-empty-form-template-manyManyRelation')
 		});
