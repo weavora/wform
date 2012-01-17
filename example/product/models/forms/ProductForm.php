@@ -5,7 +5,8 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-class ProductForm extends Product {
+class ProductForm extends Product
+{
 
 	public static function model($className=__CLASS__)
 	{
@@ -21,7 +22,8 @@ class ProductForm extends Product {
 	}
 
 
-	public function behaviors() {
+	public function behaviors()
+	{
 		return array_merge(
 			parent::behaviors(),
 			array(

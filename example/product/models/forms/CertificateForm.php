@@ -5,7 +5,9 @@
  * @copyright Copyright (c) 2011 Weavora LLC
  */
 
-class CertificateForm extends Certificate {
+class CertificateForm extends Certificate
+{
+
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
@@ -18,7 +20,8 @@ class CertificateForm extends Certificate {
 		));
 	}
 
-	public function behaviors() {
+	public function behaviors()
+	{
 		return array_merge(
 			parent::behaviors(),
 			array(

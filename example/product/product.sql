@@ -56,8 +56,8 @@ DROP TABLE IF EXISTS `certificates`;
 
 CREATE TABLE `certificates` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(11) DEFAULT NULL,
   `product_id` int(11) DEFAULT NULL,
+  `name` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -85,9 +85,9 @@ DROP TABLE IF EXISTS `products`;
 
 CREATE TABLE `products` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) DEFAULT NULL,
   `name` varchar(200) DEFAULT NULL,
   `price` double DEFAULT NULL,
-  `category_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

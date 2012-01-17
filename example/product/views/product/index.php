@@ -1,4 +1,4 @@
-<?php if ($models): ?>
+<?php if ($products): ?>
 <table>
 	<tr>
 		<th>id</th>
@@ -8,14 +8,14 @@
 		<th>images count</th>
 		<th>certificate</th>
 	</tr>
-	<?php foreach ($models as $model): ?>
+	<?php foreach ($products as $product): ?>
 	<tr>
-		<td><?php echo $model->id ?></td>
-		<td><?php echo $model->name ?></td>
-		<td><?php echo $model->category ? $model->category->name : '' ?></td>
-		<td><?php echo $model->description ? $model->description->color . '/' . $model->description->size : '' ?></td>
-		<td><?php echo $model->images ? count($model->images) : '' ?></td>
-		<td><?php echo $model->certificate ? $model->certificate->name : '' ?></td>
+		<td><?php echo $product->id ?></td>
+		<td><?php echo $product->name ?></td>
+		<td><?php echo $product->category ? $product->category->name : '' ?></td>
+		<td><?php echo $product->description ? $product->description->color . '/' . $product->description->size : '' ?></td>
+		<td><?php echo $product->images ? count($product->images) : '' ?></td>
+		<td><?php echo $product->certificate ? $product->certificate->name : '' ?></td>
 	</tr>
 	<?php endforeach ?>
 </table>

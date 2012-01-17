@@ -1,6 +1,12 @@
 <?php
+/**
+ * @author Weavora Team <hello@weavora.com>
+ * @link http://weavora.com
+ * @copyright Copyright (c) 2011 Weavora LLC
+ */
 
-class AttachmentForm extends Attachment {
+class AttachmentForm extends Attachment
+{
 
 	public $tempFile = null;
 
@@ -9,7 +15,8 @@ class AttachmentForm extends Attachment {
 		return parent::model($className);
 	}
 
-	public function rules() {
+	public function rules()
+	{
 		return array_merge(parent::rules(), array(
 			array('tempFile', 'safe'),
 		));
@@ -55,7 +62,6 @@ class AttachmentForm extends Attachment {
 		if (!$tempFile->isValid()) {
 			return false;
 		}
-
 
 		$attachmentDirectory = Yii::app()->runtimePath . '/' . $this->object_type . '/';
 
