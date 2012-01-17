@@ -41,7 +41,7 @@
         	var formId = $form.attr('id') + "_" + self.formCount;
         	$form.attr('id', formId);
         	$form.find('*[name*="{index}"]').each(function() {
-				this.name = this.name.replace('{index}', self.formCount);
+				$(this).attr('name', $(this).attr('name').replace('{index}', self.formCount));
 				this.id = this.id.replace('{index}', self.formCount);
 			});
 			$form.find(self.options.deleteLink).click(function(e) {
