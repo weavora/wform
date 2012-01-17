@@ -27,7 +27,7 @@ class ProductController extends Controller
 		if (Yii::app()->request->getPost('ProductForm')) {
 			$productForm->attributes = Yii::app()->request->getPost('ProductForm');
 			if ($productForm->save()) {
-				$this->redirect('/product/index');
+				$this->redirect($this->createUrl('product/index'));
 			}
 		}
 		$this->render('edit', array(

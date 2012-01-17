@@ -48,7 +48,8 @@ class AttachmentForm extends Attachment
 	public function saveUploadedFile()
 	{
 		if (empty($this->file_origin)) {
-			$this->delete();
+			if (!$this->isNewRecord)
+				$this->delete();
 			return false;
 		}
 

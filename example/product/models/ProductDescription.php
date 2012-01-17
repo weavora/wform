@@ -21,8 +21,7 @@ class ProductDescription extends WActiveRecord
 	public function rules()
 	{
 		return array(
-			array('product_id', 'required'),
-			array('color, size', 'safe'),
+			array('color, size, product_id', 'safe'),
 		);
 	}
 

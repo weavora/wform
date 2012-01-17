@@ -3,8 +3,29 @@
 		width: 300px;
 	}
 </style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://raw.github.com/weavora/wform/master/js/jquery.multiplyforms.js"></script>
 <div class="form">
+<?php if ($product->isNewRecord):?>
+	<h1>Add Product</h1>
+<?php else:?>
+	<h1>Edit Product</h1>
+<?php endif;?>
+
 <?php $form = $this->beginWidget('WForm', array('htmlOptions' => array('enctype'=>'multipart/form-data'))); ?>
+	<?php if ($product->hasErrors()):?>
+		<ul>
+			<?php foreach($product->getErrors() as $errors):?>
+				<?php if (is_array($errors)):?>
+					<?php foreach($errors as $error):?>
+						<li><?php echo $error;?></li>
+					<?php endforeach;?>
+				<?php else:?>
+					<li><?php echo $errors;?></li>
+				<?php endif;?>
+			<?php endforeach;?>
+		</ul>
+	<?php endif;?>
 	<fieldset>
 		<legend>Product</legend>
 		<div class="row">
@@ -168,7 +189,5 @@
 		$('.images').multiplyForms({
 			addLink: '#add-image'
 		});
-
 	});
-
 </script>
