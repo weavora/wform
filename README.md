@@ -245,8 +245,7 @@ class MyController extends Controller {
 
 ```
 
-Real Example
+Real Examples
 -----
 
-... real example huge product form ...
-... maybe it would be a separate page ...
+[product form example](https://github.com/weavora/wform/wiki/Example:-Product-form)
