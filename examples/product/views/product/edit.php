@@ -21,6 +21,8 @@
 	<h1>Edit Product</h1>
 <?php endif;?>
 
+<p><a href="<?php echo $this->createUrl('product/index');?>">Back to products list</a></p>
+
 <div class="form">
 <?php $form = $this->beginWidget('WForm', array('htmlOptions' => array('enctype'=>'multipart/form-data'))); ?>
 <?php if ($product->hasErrors()):?>
@@ -112,7 +114,7 @@
 							<li>
 								<label>
 									<?php echo $tag->name ?>
-									<?php echo $form->checkBox($product, "tags.{$index}.id", array('value' => $tag->id, 'uncheckValue' => null)) ?>
+									<?php echo $form->checkBox($product, "tags.{$index}.id", array('value' => $tag->id, 'uncheckValue' => null, 'checked' => in_array($tag->id, CHtml::listData($product->tags, 'id', 'id')))) ?>
 								</label>
 							</li>
 						<?php endforeach ?>
@@ -123,7 +125,7 @@
 					<?php if ($product->tags): ?>
 					<?php foreach ($product->tags as $index => $tag): ?>
 						<?php if ($tag->isNewRecord): ?>
-							<li>
+							<li class="embed">
 								<?php echo $form->textField($product, "tags.$index.name") ?>
 								<?php echo $form->error($product, "tags.$index.name") ?>
 								<a class="delete" href="#">delete</a>
@@ -145,13 +147,15 @@
 				<?php if ($product->images): ?>
 					<?php foreach ($product->images as $index => $image): ?>
 						<?php if (!empty($image->file_origin)):?>
-							<?php echo $form->hiddenField($product, "images.{$index}.object_type") ?>
-							<?php echo $form->hiddenField($product, "images.{$index}.id") ?>
-							<?php echo $form->hiddenField($product, "images.{$index}.file") ?>
-							<?php echo $form->hiddenField($product, "images.{$index}.file_origin") ?>
-							<?php echo $form->hiddenField($product, "images.{$index}.tempFile") ?>
-							<?php echo CHtml::link($image->file_origin, $image->fileUrl) ?>
-							<a href="#" class="delete"">Delete</a>
+							<li class="embed">
+								<?php echo $form->hiddenField($product, "images.{$index}.object_type") ?>
+								<?php echo $form->hiddenField($product, "images.{$index}.id") ?>
+								<?php echo $form->hiddenField($product, "images.{$index}.file") ?>
+								<?php echo $form->hiddenField($product, "images.{$index}.file_origin") ?>
+								<?php echo $form->hiddenField($product, "images.{$index}.tempFile") ?>
+								<?php echo CHtml::link($image->file_origin, $image->fileUrl) ?>
+								<a href="#" class="delete"">Delete</a>
+							</li>
 						<?php endif; ?>
 					<?php endforeach ?>
 				<?php endif; ?>
@@ -192,7 +196,12 @@
 		});
 
 		$('.tags').multiplyForms({
-			addLink: '#add-tag'
+			addLink: '#add-tag',
+			templateClass: 'template',
+			embedClass: 'embed',
+			deleteLink: '.delete',
+			afterAdd: function(embedForm, multiplyFormInstance){},
+			beforeDelete: function(embedForm, multiplyFormInstance){}
 		});
 
 		$('.images').multiplyForms({
