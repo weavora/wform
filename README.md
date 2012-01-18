@@ -135,7 +135,10 @@ class MyController extends Controller {
 }
 ```
 
-3) Define form using WForm instead of CActiveForm
+3) Include js/jquery.multiplyforms.js jquery plugin into your layout
+
+
+4) Define form using WForm instead of CActiveForm
 
 ```php
 // protected/views/my/edit.php
@@ -231,17 +234,21 @@ class MyController extends Controller {
 <script type="text/javascript">
 	$(document).ready(function(){
 		// init controls for multiply form
-		$('.manyManyRelation').multiplyForms({
-			template : $('.just-empty-form-template-manyManyRelation')
-		});
-
 		$('.hasManyRelation').multiplyForms({
-			template : $('.just-empty-form-template-hasManyRelation')
+			embedClass: 'has-many-item',
+			templateClass: 'just-empty-form-template-hasManyRelation'
 		});
 
+		$('.manyManyRelation').multiplyForms({
+			embedClass: 'many-many-item',
+			templateClass: 'just-empty-form-template-manyManyRelation',
+			addLink: '.add',
+			deleteLink: '.delete',
+			afterAdd: function(embedForm, multiplyFormInstance){},
+			beforeDelete: function(embedForm, multiplyFormInstance){}
+		});
 	});
 </script>
-
 
 ```
 
