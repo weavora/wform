@@ -1,7 +1,7 @@
 Yii Composite Form Extension
 ==========================
 
-Extension to easier processing complex forms with multiple relations.
+Extension that can greatly simplify complex forms processing that have multiple relations.
 
 [Weavora's](http://weavora.com) Git Repo - [https://github.com/weavora/wform](https://github.com/weavora/wform)
 
@@ -9,14 +9,14 @@ Extension to easier processing complex forms with multiple relations.
 
 * Easy composite form processing
 * Fast configuration
-* All standard relations supported: has_one, belongs_to, has_many and many_many
+* Support of all standard relations: has_one, belongs_to, has_many and many_many
 
 Configuration
 -----
 
 1) Download and unpack source into protected/extensions/ folder.
 
-2) There are config settings for import section below:
+2) Below you can see config settings for import:
 
 ```php
 <?php
@@ -44,13 +44,13 @@ b) If you already has modified class for active record, then extend it from WAct
 // extend from WActiveRecord
 class ActiveRecord extends WActiveRecord
 {
-	// you custom code here (if you have one)
+	// you custom code here (if reqired)
 }
 
 // or add onUnsafeAttribute method
 class ActiveRecord extends CActiveRecord
 {
-	// you custom code here (if you have one)
+	// you custom code here (if required)
 
 	/**
 	 * Raise onUnsafeAttribute event for active record
@@ -72,7 +72,7 @@ Usage
 -----
 
 1) Modify model: define relations and attach behavior.
-You can also create separate class for form extended from your model.
+You can also create separate class for the form extended from your model.
 
 ```php
 <?php
