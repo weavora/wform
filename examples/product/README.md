@@ -3,8 +3,8 @@
 # Setup
 
 1. Copy sample source to your application
-2. Execute db dump contained into products.sql
-3. Update imports into main.php similar to:
+2. Execute db dump from products.sql
+3. Update imports in main.php to the following:
 
 ```php
 'import'=>array(
@@ -14,7 +14,7 @@
 	'ext.wform.*',
 ),
 ```
-4. Now you could access to sample controller: 
+4. Now you have access to sample controller: 
  
 - Product List: http://yourhost.local/index.php?r=/product
 - Create Product: http://yourhost.local/index.php?r=/product/add
@@ -25,7 +25,7 @@ Here is what you should see:
 
 ![Form Layout](http://i.imgur.com/F3wRZ.png)
 
-# DB Structure
+# DB Diagram
 
 ![DB Structure](http://i.imgur.com/A8c7W.png)
 
