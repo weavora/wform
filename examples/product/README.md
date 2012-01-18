@@ -107,7 +107,8 @@ class ProductForm extends Product {
 
 <?php
 
-class AttachmentForm extends Attachment {
+class AttachmentForm extends Attachment
+{
 
 	public $tempFile = null;
 
@@ -116,7 +117,8 @@ class AttachmentForm extends Attachment {
 		return parent::model($className);
 	}
 
-	public function rules() {
+	public function rules()
+	{
 		return array_merge(parent::rules(), array(
 			array('tempFile', 'safe'),
 		));
@@ -148,7 +150,8 @@ class AttachmentForm extends Attachment {
 	public function saveUploadedFile()
 	{
 		if (empty($this->file_origin)) {
-			$this->delete();
+			if (!$this->isNewRecord)
+				$this->delete();
 			return false;
 		}
 
