@@ -18,7 +18,7 @@ class WForm extends CActiveForm
 	{
 		list($model, $attribute, $htmlOptions) = self::resolveArgs($parentModel, $attributedPath, $htmlOptions);
 		$htmlOptions['for'] = CHtml::getIdByName($htmlOptions['name']);
-		if (($label = self::resolveLabel($parentModel, $attributedPath)) !== null)
+		if (!isset($htmlOptions['label']) && ($label = self::resolveLabel($parentModel, $attributedPath)) !== null)
 			$htmlOptions['label'] = $label;
 		return parent::label($model, $attribute, $htmlOptions);
 	}
@@ -34,7 +34,7 @@ class WForm extends CActiveForm
 	{
 		list($model, $attribute, $htmlOptions) = self::resolveArgs($parentModel, $attributedPath, $htmlOptions);
 		$htmlOptions['for'] = CHtml::getIdByName($htmlOptions['name']);
-		if (($label = self::resolveLabel($parentModel, $attributedPath)) !== null)
+		if (!isset($htmlOptions['label']) && ($label = self::resolveLabel($parentModel, $attributedPath)) !== null)
 			$htmlOptions['label'] = $label;
 		return parent::labelEx($model, $attribute, $htmlOptions);
 	}
