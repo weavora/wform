@@ -6,10 +6,11 @@
 		self.options = $.extend({}, $.multiplyForms.defaultOptions, options);
 
 		self.element.data("multiplyForms", self);
+		self.template = self.element.find("." + self.options.templateClass);
 
 		self.init = function() {
 
-			$(self.options.template).find('input, textarea, select, button').attr('disabled', 'disabled');
+			self.template.find('input, textarea, select, button').attr('disabled', 'disabled');
 
 			// find add links inside self.element
 			var addLinks = self.element.find(self.options.addLink);
@@ -36,7 +37,7 @@
 
 		self._cloneTemplate = function() {
 			var self = this;
-			var newForm = self.element.find("." + self.options.templateClass)
+			var newForm = self.template
 				.clone(false)
 				.find('input, textarea, select, button')
 					.removeAttr('disabled')
