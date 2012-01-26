@@ -10,7 +10,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 	/**
 	 * @var array what relations we should save
 	 */
-	public $relations = array();
+	public $relations = null;
 
 	/**
 	 * @var array scenarios to behavior will be applied
@@ -168,14 +168,22 @@ class WFormBehavior extends CActiveRecordBehavior {
 	 */
 	protected function _buildRelatedModel($parentModel) {
 		$this->relatedModels = array();
-		foreach ($this->relations as $relation => $options) {
-			if (is_numeric($relation)) {
+		if (is_null($this->relations)) {
+			$this->relations = array_keys($parentModel->relations());
+		}
+		foreach ($this->relations as $index => $options) {
+			$relation = $index;
+
+			if (is_numeric($index)) {
 				$relation = $options;
 				$options = array();
 			}
 
-			if (($relationModel = WFormRelation::getInstance($parentModel, $relation, $options)) !== null)
+			if (($relationModel = WFormRelation::getInstance($parentModel, $relation, $options)) !== null) {
 				$this->relatedModels[$relation] = $relationModel;
+			} else {
+				unset($this->relations[$index]);
+			}
 
 		}
 	}
