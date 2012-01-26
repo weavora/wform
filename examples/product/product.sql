@@ -78,6 +78,7 @@ INSERT INTO `categories` VALUES ('3', 'Used');
 INSERT INTO `certificates` VALUES ('1', '1', '9045');
 INSERT INTO `product_descriptions` VALUES ('1', '1', 'Red', '100x100');
 INSERT INTO `products` VALUES ('1', '1', 'Test Product', '99');
+INSERT INTO `attachments` VALUES ('1', '1', 'product_image', 'file.text', 'path/to/file.txt');
 INSERT INTO `products_2_tags` VALUES ('1', '2');
 INSERT INTO `products_2_tags` VALUES ('1', '3');
 INSERT INTO `tags` VALUES ('1', 'bad');

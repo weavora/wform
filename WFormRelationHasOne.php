@@ -12,23 +12,26 @@ class WFormRelationHasOne extends WFormRelation {
 	public $required = true;
 
 	public function setAttributes($attributes) {
-		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
-		
-		$relationModel = $this->_getModel();
-		$relationModel->attributes = $attributes;
+		if (!is_null($attributes)) {
+			$relationModel = $this->getRelatedModel();
+			$relationModel->attributes = $attributes;
+		}
+
+//		var_dump($attributes);
 	}
 
 	public function validate() {
-		$relationModel = $this->_getModel($this->required);
+		$relationModel = $this->getRelatedModel($this->required);
 
 		if (is_null($relationModel) && !$this->required)
 			return true;
+
 
 		return  $relationModel->validate();
 	}
 
 	public function save() {
-		$relationModel = $this->_getModel($this->required);
+		$relationModel = $this->getRelatedModel($this->required);
 
 		if (is_null($relationModel) && !$this->required)
 			return true;
@@ -39,7 +42,7 @@ class WFormRelationHasOne extends WFormRelation {
 		return $relationModel->save();
 	}
 
-	protected function _getModel($createNewIfEmpty = true) {
+	public function getRelatedModel($createNewIfEmpty = true) {
 		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
 
 		if (!$this->model->{$this->name}) {

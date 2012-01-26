@@ -12,7 +12,7 @@ class WFormRelationBelongsTo extends WFormRelationHasOne {
 	public $required = true;
 
 	public function save() {
-		$relationModel = $this->_getModel($this->required);
+		$relationModel = $this->getRelatedModel($this->required);
 
 		if (is_null($relationModel) && !$this->required)
 			return true;

@@ -15,27 +15,42 @@ class WFormRelation {
 	public $allowEmpty = false;
 	public $unsetInvalid = false;
 
+	// @todo why $name is public?
 	public $name = null;
+
+	// @todo rename to $_info, $_model, $_type
 	protected $info = null;
 	protected $model = null;
 	protected $type = null;
 
 	public static function getInstance($model, $relationName, $options = array()) {
-		if (!self::_isRelationExists($model, $relationName))
-			return null;
+		// for 'relations' => array('someRelation','someOtherRelation')
+		if (is_numeric($relationName) && is_string($options)) {
+			$relationName = $options;
+			$options = array();
+		}
 
 		$relationInfo = self::getRelationInfo($model, $relationName);
+		if ($relationInfo === null)
+			return null;
 
 		switch($relationInfo[self::RELATION_TYPE]) {
 			case CActiveRecord::HAS_ONE: $relation = new WFormRelationHasOne(); break;
 			case CActiveRecord::HAS_MANY: $relation = new WFormRelationHasMany(); break;
 			case CActiveRecord::BELONGS_TO: $relation = new WFormRelationBelongsTo(); break;
 			case CActiveRecord::MANY_MANY: $relation = new WFormRelationManyMany(); break;
+			default:
+				return null;
+
 		}
 
-		$options['model'] = $model;
-		$options['name'] = $relationName;
-		$options['info'] = $relationInfo;
+		$relation->setModel($model);
+		$relation->setInfo($relationInfo);
+		$relation->name = $relationName;
+
+//		$options['model'] = $model;
+//		$options['name'] = $relationName;
+//		$options['info'] = $relationInfo;
 
 		$relation->setOptions($options);
 
@@ -48,7 +63,7 @@ class WFormRelation {
 
 	public function setOptions($options) {
 		foreach($options as $key => $value) {
-			if (property_exists($this, $key)) {
+			if (property_exists($this, $key) && !in_array($key, array('name', 'type', 'info', 'model'))) {
 				$this->{$key} = $value;
 			}
 		}
@@ -56,11 +71,32 @@ class WFormRelation {
 
 	public static function getRelationInfo($model, $relationName) {
 		$relations = $model->relations();
+		if (!array_key_exists($relationName, $relations))
+			return null;
 		return $relations[$relationName];
 	}
 
-	protected static function _isRelationExists($model, $relationName) {
-		$relations = $model->relations();
-		return array_key_exists($relationName, $relations);
+//	public function getInfo() {
+//		return $this->info;
+//	}
+//
+	public function setInfo($info) {
+		$this->info = $info;
+	}
+
+//	public function getType() {
+//		return $this->type;
+//	}
+
+	public function setType($type) {
+		$this->type = $type;
+	}
+
+//	public function getModel() {
+//		return $this->model;
+//	}
+//
+	public function setModel($model) {
+		$this->model = $model;
 	}
 }

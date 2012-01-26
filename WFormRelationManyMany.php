@@ -43,7 +43,7 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 		try {
 			$sql = "INSERT INTO {$foreignKey['table']} ({$foreignKey['model_fk']}, {$foreignKey['relation_fk']}) VALUES (:model_fk,:relation_fk)";
 
-			$command = Yii::app()->db->createCommand($sql);
+			$command = $this->model->getDbConnection()->createCommand($sql);
 			$command->bindValues(array(
 				":model_fk" => $this->model->primaryKey,
 				":relation_fk" => $relatedModel->primaryKey,
@@ -66,7 +66,7 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 		try {
 			$sql = "DELETE FROM {$foreignKey['table']} WHERE {$foreignKey['model_fk']} = :model_fk";
 
-			$command = Yii::app()->db->createCommand($sql);
+			$command = $this->model->getDbConnection()->createCommand($sql);
 			$command->bindValues(array(
 				":model_fk" => $this->model->primaryKey,
 			));
@@ -89,9 +89,9 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 		if (preg_match('/(?P<table>.*?)\((?P<model_fk>.*?),(?P<relation_fk>.*?)\)/is', $key, $matches))
 		{
 			return array(
-				'table' => Yii::app()->db->quoteTableName(trim($matches['table'])),
-				'model_fk' => Yii::app()->db->quoteColumnName(trim($matches['model_fk'])),
-				'relation_fk' => Yii::app()->db->quoteColumnName(trim($matches['relation_fk'])),
+				'table' => $this->model->getDbConnection()->quoteTableName(trim($matches['table'])),
+				'model_fk' => $this->model->getDbConnection()->quoteColumnName(trim($matches['model_fk'])),
+				'relation_fk' => $this->model->getDbConnection()->quoteColumnName(trim($matches['relation_fk'])),
 			);
 		}
 
