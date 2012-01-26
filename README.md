@@ -244,9 +244,16 @@ class MyController extends Controller {
 			templateClass: 'just-empty-form-template-manyManyRelation',
 			addLink: '.add',
 			deleteLink: '.delete',
-			afterAdd: function(embedForm, multiplyFormInstance){},
-			beforeDelete: function(embedForm, multiplyFormInstance){}
+			mode: 'append' // could be also 'prepend'. Specify should new form put to top or bottom of list
+		})
+		.on('multiplyForms.add', function(event, embedForm, multiplyFormInstance){})
+		.on('multiplyForms.delete', function(event, embedForm, multiplyFormInstance){
+			if (!confirm("Are you sure to delete this record?")) {
+				event.preventDefault();
+			}
 		});
+
+
 	});
 </script>
 

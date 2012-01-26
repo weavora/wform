@@ -28,10 +28,14 @@
 				var embedForm = $(e.target).parents("." + self.options.embedClass);
 
 				// beforeDelete callback
-				if ($.isFunction(self.options.beforeDelete)) {
-					self.options.beforeDelete.call(this, embedForm, self);
-				}
-				embedForm.remove();
+				var e = jQuery.Event("multiplyForms.delete", {multiplyFormInstance: self});
+				e.target = embedForm;
+				self.element.trigger(e, [embedForm, self]);
+//				if ($.isFunction(self.options.beforeDelete)) {
+//					self.options.beforeDelete.call(this, embedForm, self);
+//				}
+				if (!e.isDefaultPrevented())
+					embedForm.remove();
 			});
 		};
 
@@ -41,18 +45,29 @@
 				.clone(false)
 				.find('input, textarea, select, button')
 					.removeAttr('disabled')
-				.end()
-				.appendTo(self.element)
+				.end();
+
+			if (self.options.mode == "append") {
+				newForm.appendTo(self.element);
+			} else {
+				newForm.appendTo(self.element);
+			}
+
+			newForm
 				.addClass(self.options.embedClass)
 				.removeClass(self.options.templateClass)
 				.show();
 
 			self._updateIndex(newForm);
 
+
 			// afterAdd callback
-			if ($.isFunction(self.options.afterAdd)) {
-				self.options.afterAdd.call(this, newForm, self);
-			}
+			var e = jQuery.Event("multiplyForms.add");
+			e.target = newForm;
+			self.element.trigger(e, [newForm, self]);
+//			if ($.isFunction(self.options.afterAdd)) {
+//				self.options.afterAdd.call(this, newForm, self);
+//			}
 		};
 
 		self._updateIndex = function(form) {
@@ -72,7 +87,8 @@
 		templateClass: "template",
 		embedClass: "embed",
 		afterAdd: undefined,
-		beforeDelete: undefined
+		beforeDelete: undefined,
+		mode: "append"
 	};
 
 	$.fn.multiplyForms = function(options) {
