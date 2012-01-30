@@ -23,7 +23,7 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::setAttributes
+	 * @covers WFormRelationManyMany::setAttributes
 	 */
 	public function testSetAttributes()
 	{
@@ -73,7 +73,7 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::validate
+	 * @covers WFormRelationManyMany::validate
 	 * @dataProvider validateProvider
 	 */
 	public function testValidate($expectedResult, $relationOptions, $relationAttribute, $onFailComment = "")
@@ -89,7 +89,7 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::validate
+	 * @covers WFormRelationManyMany::validate
 	 */
 	public function testUnsetInvalid()
 	{
@@ -193,7 +193,7 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::save
+	 * @covers WFormRelationManyMany::save
 	 * @dataProvider saveProvider
 	 */
 	public function testSave($expectedResult, $relationOptions, $relationAttribute, $onFailComment = "")
@@ -291,7 +291,7 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::getRelatedModels
+	 * @covers WFormRelationManyMany::getRelatedModels
 	 */
 	public function testGetRelatedModels()
 	{
@@ -316,6 +316,151 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 		$relation = WFormRelation::getInstance($product, 'tags');
 
 		$this->assertCount(2, $relation->getRelatedModels());
+	}
+	
+	/**
+	 * @covers WFormRelationManyMany::getActualRelatedModels
+	 */
+	public function testGetActualRelatedModels()
+	{
+		$product = $this->_getProductWithRelation(1);
+		$relation = WFormRelation::getInstance($product, 'tags');
+
+		$this->assertCount(2, $relation->getRelatedModels());
+		$this->assertCount(2, $relation->getActualRelatedModels());
+
+		$product->attributes = array(
+			'name' => 'name',
+			'tags' => array(),
+		);
+
+		$this->assertCount(2, $relation->getActualRelatedModels());
+		$this->assertCount(0, $relation->getRelatedModels());
+
+		$product->attributes = array(
+			'name' => 'name',
+			'tags' => array(
+				array(
+					'name' => 'tag_name1',
+				),
+			),
+		);
+
+		$this->assertCount(2, $relation->getActualRelatedModels());
+		$this->assertCount(1, $relation->getRelatedModels());
+
+	}
+
+	/**
+	 * WFormRelationManyMany::lazyDelete
+	 * @dataProvider lazyDeleteProvider
+	 */
+	public function testLazyDelete($expectedResult, $relationOptions, $relationAttribute, $onFailComment = "")
+	{
+		$product = $this->_getProductWithRelation(1, $relationOptions);
+
+		$product->attributes = array(
+			'name' => 'name',
+			'tags' => $relationAttribute,
+		);
+
+		$this->assertCount($expectedResult['relationsCount'], $product->tags, $onFailComment);
+
+		$product->save();
+
+		$this->assertCount($expectedResult['relationsCount'], $product->tags, $onFailComment);
+		$this->assertCount($expectedResult['relationsCount'], $product->getRelated('tags', true), $onFailComment);
+
+		$relatedIds = array();
+		foreach($product->getRelated('tags', true) as $model) {
+			$relatedIds[] = $model->primaryKey;
+		}
+
+		$this->assertTrue(in_array($expectedResult['oldId'], $relatedIds) == $expectedResult['containsOld']);
+	}
+
+	public function lazyDeleteProvider()
+	{
+		return array(
+			// required=true
+			array(
+				'result' => array('relationsCount' => 1, 'oldId' => 1, 'containsOld' => false),
+				'relationOptions' => array('required' => false),
+				'relationAttribute' => array(
+					array(
+						'name' => 'tag_name'
+					),
+				),
+				'comment' => '1 new file'
+			),
+			array(
+				'result' => array('relationsCount' => 2, 'oldId' => 1, 'containsOld' => true),
+				'relationOptions' => array('required' => false),
+				'relationAttribute' => array(
+					array(
+						'id' => 1,
+						'name' => 'tag_name1'
+					),
+					array(
+						'name' => 'tag_name2'
+					),
+				),
+				'comment' => '1 old, 1 new file'
+			),
+			array(
+				'result' => array('relationsCount' => 2, 'oldId' => 1, 'containsOld' => false),
+				'relationOptions' => array('required' => false),
+				'relationAttribute' => array(
+					array(
+						'name' => 'tag_name1'
+					),
+					array(
+						'name' => 'tag_name2'
+					),
+				),
+				'comment' => '2 new files'
+			),
+			array(
+				'result' => array('relationsCount' => 0, 'oldId' => 1, 'containsOld' => false),
+				'relationOptions' => array('required' => false),
+				'relationAttribute' => array(
+				),
+				'comment' => '0 files'
+			),
+		);
+	}
+
+	/**
+	 * WFormRelationManyMany::delete
+	 */
+	public function testDelete()
+	{
+		$product = $this->_getProductWithRelation(1);
+
+		$this->assertCount(2, $product->tags);
+
+
+		$this->assertTrue($product->delete());
+
+		$sql = "SELECT COUNT(*) FROM products_2_tags WHERE product_id = 1";
+
+		$command = $this->_connection->createCommand($sql);
+		$this->assertEquals(0, $command->queryScalar());
+	}
+
+	public function testDeleteWithoutCascade()
+	{
+		$product = $this->_getProductWithRelation(1, array('cascadeDelete' => false));
+
+		$this->assertCount(2, $product->tags);
+
+
+		$this->assertTrue($product->delete());
+
+		$sql = "SELECT COUNT(*) FROM products_2_tags WHERE product_id = 1";
+
+		$command = $this->_connection->createCommand($sql);
+		$this->assertEquals(2, $command->queryScalar());
 	}
 
 	/**

@@ -27,7 +27,7 @@ class WFormRelationHasOneTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::setAttributes
+	 * @covers WFormRelationHasOne::setAttributes
 	 */
 	public function testSetAttributes()
 	{
@@ -70,7 +70,7 @@ class WFormRelationHasOneTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::validate
+	 * @covers WFormRelationHasOne::validate
 	 * @dataProvider validateProvider
 	 */
 	public function testValidate($expectedResult, $relationOptions, $relationAttribute, $onFailComment = "")
@@ -138,7 +138,7 @@ class WFormRelationHasOneTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::save
+	 * @covers WFormRelationHasOne::save
 	 * @dataProvider saveProvider
 	 */
 	public function testSave($expectedResult, $relationOptions, $relationAttribute, $onFailComment = "")
@@ -212,7 +212,7 @@ class WFormRelationHasOneTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers WFormRelationHasMany::getRelatedModel
+	 * @covers WFormRelationHasOne::getRelatedModel
 	 */
 	public function testGetRelatedModel()
 	{
@@ -236,6 +236,127 @@ class WFormRelationHasOneTest extends PHPUnit_Framework_TestCase
 		$relation = WFormRelation::getInstance($product, 'description');
 
 		$this->assertNotEmpty($relation->getRelatedModel());
+	}
+
+	/**
+	 * @covers WFormRelationHasOne::getActualRelatedModel
+	 */
+	public function testGetActualRelatedModel()
+	{
+		$product = $this->_getProductWithRelation(1, array('required' => false));
+		$relation = WFormRelation::getInstance($product, 'description', array('required' => false));
+
+		$this->assertNotEmpty($relation->getRelatedModel(false));
+		$this->assertNotEmpty($relation->getActualRelatedModel());
+
+		$product->attributes = array(
+			'name' => 'name',
+			'description' => null,
+		);
+
+
+		$this->assertNotEmpty($relation->getActualRelatedModel());
+		$this->assertEmpty($relation->getRelatedModel(false));
+
+		$product->attributes = array(
+			'name' => 'name',
+			'description' => array(
+				'size' => '10',
+			),
+		);
+
+		$this->assertNotEmpty($relation->getActualRelatedModel());
+		$this->assertNotEmpty($relation->getRelatedModel(false));
+
+	}
+
+	/**
+	 * WFormRelationHasOne::lazyDelete
+	 * @dataProvider lazyDeleteProvider
+	 */
+	public function testLazyDelete($expectedResult, $relationOptions, $relationAttribute, $onFailComment = "")
+	{
+		$product = $this->_getProductWithRelation(1, $relationOptions);
+
+		$product->attributes = array(
+			'name' => 'name',
+			'description' => $relationAttribute,
+		);
+
+
+		$this->assertTrue(empty($product->description) == ($expectedResult['relationsCount'] == 0), $onFailComment);
+
+		$product->save();
+
+		$this->assertTrue(empty($product->description) == ($expectedResult['relationsCount'] == 0), $onFailComment);
+
+		$refreshedDescription = $product->getRelated('description', true);
+		$this->assertTrue(empty($refreshedDescription) == ($expectedResult['relationsCount'] == 0), $onFailComment);
+
+
+		$relatedIds = array();
+		$model = $product->getRelated('description', true);
+		if ($model)
+			$relatedIds[] = $model->primaryKey;
+
+		$this->assertTrue(in_array($expectedResult['oldId'], $relatedIds) == $expectedResult['containsOld']);
+	}
+
+	public function lazyDeleteProvider()
+	{
+		return array(
+			// required=true
+			array(
+				'result' => array('relationsCount' => 1, 'oldId' => 1, 'containsOld' => true),
+				'relationOptions' => array('required' => false),
+				'relationAttribute' => array(
+					'size' => '10x10'
+				),
+				'comment' => 'new description'
+			),
+			array(
+				'result' => array('relationsCount' => 2, 'oldId' => 1, 'containsOld' => true),
+				'relationOptions' => array('required' => false),
+				'relationAttribute' => array(
+					'id' => 1,
+					'size' => '10x10'
+				),
+				'comment' => 'old description'
+			),
+			array(
+				'result' => array('relationsCount' => 0, 'oldId' => 1, 'containsOld' => false),
+				'relationOptions' => array('required' => false),
+				'relationAttribute' => null,
+				'comment' => 'empty description'
+			),
+		);
+	}
+
+
+	/**
+	 * WFormRelationHasMany::delete
+	 */
+	public function testDelete()
+	{
+		$product = $this->_getProductWithRelation(1);
+
+		$this->assertNotEmpty($product->description);
+		$id = $product->description->primaryKey;
+		$this->assertTrue($product->delete());
+		$this->assertEmpty(ProductDescription::model()->findByPk($id));
+	}
+
+	/**
+	 * WFormRelationHasMany::delete
+	 */
+	public function testDeleteWithoutCascade()
+	{
+		$product = $this->_getProductWithRelation(1, array('cascadeDelete' => false));
+
+		$this->assertNotEmpty($product->description);
+		$id = $product->description->primaryKey;
+		$this->assertTrue($product->delete());
+		$this->assertNotEmpty(ProductDescription::model()->findByPk($id));
 	}
 
 	/**

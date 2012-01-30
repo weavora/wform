@@ -97,4 +97,3 @@ class WTempFileTest extends PHPUnit_Framework_TestCase
         );
     }
 }
-?>

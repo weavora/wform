@@ -10,9 +10,10 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 	public $type = CActiveRecord::HAS_MANY;
 
 	public function save() {
-		// remove all links
-		if (!$this->_unlink())
-			return false;
+		if ($this->mode == self::MODE_REPLACE) {
+			foreach($this->getActualRelatedModels() as $model)
+				$this->addToLazyDelete($model);
+		}
 
 		$relatedModels = $this->getRelatedModels();
 		if (count($relatedModels) == 0 && $this->required)
@@ -20,6 +21,8 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 
 		$isSuccess = true;
 		foreach ($relatedModels as $index => $relationModel) {
+			$this->removeFromLazyDelete($relationModel);
+
 			if ($relationModel->save()) {
 				$isSuccess = $this->_linkTo($relationModel) && $isSuccess;
 			} else {
@@ -55,21 +58,50 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 		return true;
 	}
 
+	public function lazyDelete() {
+		$relatedIds = array();
+		foreach($this->_lazyDeleteRecords as $model) {
+			$relatedIds[] = $model->primaryKey;
+		}
+
+		if (count($relatedIds))
+			$this->_unlink($relatedIds);
+
+		parent::lazyDelete();
+	}
+
+	public function delete() {
+		if (!$this->cascadeDelete)
+			return true;
+
+		return $this->_unlink();
+	}
+
 	/**
 	 * Remove all links between parent and relation models into database
 	 *
 	 * @return bool
 	 */
-	protected function _unlink() {
+	protected function _unlink($ids = null) {
 		$foreignKey = $this->_parseForeignKey($this->info[WFormRelation::RELATION_FOREIGN_KEY]);
 
 		try {
+
 			$sql = "DELETE FROM {$foreignKey['table']} WHERE {$foreignKey['model_fk']} = :model_fk";
+			if (!is_null($ids)) {
+				$sql .= " AND {$foreignKey['relation_fk']} IN :relation_fk";
+			}
+
+			$bindValues = array(
+				":model_fk" => $this->model->primaryKey,
+			);
+
+			if (!is_null($ids)) {
+				$bindValues[':relation_fk'] = $ids;
+			}
 
 			$command = $this->model->getDbConnection()->createCommand($sql);
-			$command->bindValues(array(
-				":model_fk" => $this->model->primaryKey,
-			));
+			$command->bindValues($bindValues);
 			$command->execute();
 
 		} catch (Exception $e) {

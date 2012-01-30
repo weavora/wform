@@ -25,4 +25,8 @@ class WFormRelationBelongsTo extends WFormRelationHasOne {
 		
 		return true;
 	}
+
+	public function delete() {
+		return true;
+	}
 }

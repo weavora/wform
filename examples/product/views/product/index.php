@@ -12,6 +12,7 @@
 		<th>images count</th>
 		<th>certificate</th>
 		<th>edit</th>
+		<th>delete</th>
 	</tr>
 	<?php foreach ($products as $product): ?>
 	<tr>
@@ -22,6 +23,7 @@
 		<td><?php echo $product->images ? count($product->images) : '' ?></td>
 		<td><?php echo $product->certificate ? $product->certificate->name : '' ?></td>
 		<td><a href="<?php echo $this->createUrl('product/edit', array('id' => $product->id));?>">Edit</a></td>
+		<td><a href="<?php echo $this->createUrl('product/delete', array('id' => $product->id));?>">Delete</a></td>
 	</tr>
 	<?php endforeach ?>
 </table>

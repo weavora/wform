@@ -19,6 +19,8 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	protected $relatedModels = array();
 
+	protected $deleteQuery = array();
+
 	/**
 	 * Extend standard AR behavior events
 	 *
@@ -109,6 +111,8 @@ class WFormBehavior extends CActiveRecordBehavior {
 			if (in_array($relatedModel->type, array(CActiveRecord::BELONGS_TO))) {
 				if (!$relatedModel->save())
 					$event->isValid = false;
+
+				$this->deleteQuery[] = $relatedModel;
 			}
 		}
 	}
@@ -123,6 +127,26 @@ class WFormBehavior extends CActiveRecordBehavior {
 		foreach ($this->relatedModels as $relatedModel) {
 			if (in_array($relatedModel->type, array(CActiveRecord::HAS_ONE, CActiveRecord::HAS_MANY, CActiveRecord::MANY_MANY))) {
 				$relatedModel->save();
+
+				$this->deleteQuery[] = $relatedModel;
+			}
+		}
+
+		foreach($this->deleteQuery as $relation) {
+			$relation->lazyDelete();
+		}
+	}
+
+	/**
+	 * Delete related models which depends on parent model
+	 *
+	 * @param $event
+	 * @return void
+	 */
+	public function afterDelete($event) {
+		foreach ($this->relatedModels as $relatedModel) {
+			if (in_array($relatedModel->type, array(CActiveRecord::HAS_ONE, CActiveRecord::HAS_MANY, CActiveRecord::MANY_MANY))) {
+				$relatedModel->delete();
 			}
 		}
 	}

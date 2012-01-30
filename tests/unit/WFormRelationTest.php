@@ -55,7 +55,6 @@ class WFormRelationTest extends PHPUnit_Framework_TestCase
 
 		$relation->setOptions(array(
 			'required' => true,
-			'allowEmpty' => true,
 			'unsetInvalid' => true,
 			'name' => 'someName', // shouldn't affect
 			'info' => 'someInfo', // shouldn't affect
@@ -64,7 +63,6 @@ class WFormRelationTest extends PHPUnit_Framework_TestCase
 		));
 
 		$this->assertTrue($relation->required);
-		$this->assertTrue($relation->allowEmpty);
 		$this->assertTrue($relation->unsetInvalid);
 
 		$this->assertAttributeEmpty('name', $relation);

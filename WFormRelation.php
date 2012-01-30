@@ -11,9 +11,13 @@ class WFormRelation {
 	const RELATION_CLASS = 1;
 	const RELATION_FOREIGN_KEY = 2;
 
+	const MODE_APPEND = "append";
+	const MODE_REPLACE = "replace";
+
 	public $required = false;
-	public $allowEmpty = false;
 	public $unsetInvalid = false;
+	public $mode = self::MODE_REPLACE;
+	public $cascadeDelete = true;
 
 	// @todo why $name is public?
 	public $name = null;
@@ -22,6 +26,8 @@ class WFormRelation {
 	protected $info = null;
 	protected $model = null;
 	protected $type = null;
+
+	protected $_lazyDeleteRecords = array();
 
 	public static function getInstance($model, $relationName, $options = array()) {
 		// for 'relations' => array('someRelation','someOtherRelation')
@@ -48,10 +54,6 @@ class WFormRelation {
 		$relation->setInfo($relationInfo);
 		$relation->name = $relationName;
 
-//		$options['model'] = $model;
-//		$options['name'] = $relationName;
-//		$options['info'] = $relationInfo;
-
 		$relation->setOptions($options);
 
 		return $relation;
@@ -76,27 +78,35 @@ class WFormRelation {
 		return $relations[$relationName];
 	}
 
-//	public function getInfo() {
-//		return $this->info;
-//	}
-//
 	public function setInfo($info) {
 		$this->info = $info;
 	}
-
-//	public function getType() {
-//		return $this->type;
-//	}
 
 	public function setType($type) {
 		$this->type = $type;
 	}
 
-//	public function getModel() {
-//		return $this->model;
-//	}
-//
 	public function setModel($model) {
 		$this->model = $model;
+	}
+
+	public function addToLazyDelete($model) {
+		if (!$model->isNewRecord)
+			$this->_lazyDeleteRecords[$model->primaryKey] = $model;
+	}
+
+	public function removeFromLazyDelete($model) {
+		if (array_key_exists($model->primaryKey, $this->_lazyDeleteRecords))
+			unset($this->_lazyDeleteRecords[$model->primaryKey]);
+	}
+
+	public function lazyDelete() {
+		foreach($this->_lazyDeleteRecords as $model) {
+			$model->delete();
+		}
+	}
+
+	public function delete() {
+		return true;
 	}
 }

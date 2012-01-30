@@ -36,4 +36,13 @@ class ProductController extends Controller
 			'tags' => Tag::model()->findAll()
 		));
 	}
+
+	public function actionDelete($id)
+	{
+		$productForm = ProductForm::model()->findByPk($id);
+		if (!empty($productForm)) {
+			$productForm->delete();
+		}
+		$this->redirect($this->createUrl('product/index'));
+	}
 }

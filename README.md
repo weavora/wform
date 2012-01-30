@@ -100,10 +100,23 @@ class MyModel extends WActiveRecord {
 			'wform' => array(
 				'class' => 'ext.wform.WFormBehavior',
 				'relations' => array(
-					'hasOneRelation' => array('required' => true), // default for HAS_ONE: false
-					'belongsToRelation' => array('required' => true), // default for BELONGS_TO: false
-					'hasManyRelation' => array('required' => false), // default for HAS_MANY: true
-					'manyManyRelation' => array('required' => false), // default for MANY_MANY: true
+					'hasOneRelation' => array(
+						'required' => true, // declare that relation item should be valid (default for HAS_ONE: false)
+						'cascadeDelete' => true, // declare if relation item would be deleted during parent model delete  (default for HAS_ONE: true)
+					),
+					'belongsToRelation' => array(
+						'required' => true, // declare that all relations items to be valid (default for BELONGS_TO: false)
+					),
+					'hasManyRelation' => array(
+						'required' => true, // declare that all relations items to be valid (default for HAS_MANY: false)
+						'unsetInvalid' => true, // will unset invalid relation items during save or validate (default for HAS_MANY: false)
+						'cascadeDelete' => true, // declare if relation items would be deleted during parent model delete  (default for HAS_MANY: true)
+					),
+					'manyManyRelation' => array(
+						'required' => true, // declare that all relations items to be valid (default for MANY_MANY: false)
+						'unsetInvalid' => true, // will unset invalid relation items during save or validate (default for MANY_MANY: false)
+						'cascadeDelete' => true, // declare if db rows with relation item link to model would be deleted during parent model delete  (default for MANY_MANY: true)
+					),
 				),
 			),
 		);
@@ -131,6 +144,16 @@ class MyController extends Controller {
 		$this->render('edit', array(
 			'model' => $myModel
 		));
+	}
+
+	// delete model with relation with single line of code :)
+	public function actionDelete($id)
+	{
+		$myModel = MyModel::model()->findByPk($id);
+		if(!empty($myModel)) {
+			$myModel->delete();
+		}
+		$this->redirect('some/page');
 	}
 }
 ```
