@@ -200,12 +200,9 @@
 			templateClass: 'template',
 			embedClass: 'embed',
 			deleteLink: '.delete'
-//			afterAdd: function(embedForm, multiplyFormInstance){},
-//			beforeDelete: function(embedForm, multiplyFormInstance){}
 		})
-		.on('multiplyForms.add', function(event, embedForm, multiplyFormInstance){console.log(event, this, embedForm, multiplyFormInstance)})
+		.on('multiplyForms.add', function(event, embedForm, multiplyFormInstance){})
 		.on('multiplyForms.delete', function(event, embedForm, multiplyFormInstance){
-					console.log(event, this, embedForm, multiplyFormInstance);
 			if (!confirm("Are you sure to delete this record?")) {
 				event.preventDefault();
 			}
