@@ -89,7 +89,7 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 
 			$sql = "DELETE FROM {$foreignKey['table']} WHERE {$foreignKey['model_fk']} = :model_fk";
 			if (!is_null($ids)) {
-				$sql .= " AND {$foreignKey['relation_fk']} IN :relation_fk";
+				$sql .= " AND {$foreignKey['relation_fk']} IN (:relation_fk)";
 			}
 
 			$bindValues = array(
@@ -97,7 +97,7 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 			);
 
 			if (!is_null($ids)) {
-				$bindValues[':relation_fk'] = $ids;
+				$bindValues[':relation_fk'] = "'" . join("','", $ids) . "'";
 			}
 
 			$command = $this->model->getDbConnection()->createCommand($sql);
