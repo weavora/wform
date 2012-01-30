@@ -67,7 +67,7 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 		if (count($relatedIds))
 			$this->_unlink($relatedIds);
 
-		parent::lazyDelete();
+//		parent::lazyDelete();
 	}
 
 	public function delete() {
