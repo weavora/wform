@@ -26,22 +26,22 @@ class ProductForm extends Product
 	}
 
 
-//	public function behaviors()
-//	{
-//		return array_merge(
-//			parent::behaviors(),
-//			array(
-//				'wform' => array(
-//					'class' => 'ext.wform.WFormBehavior',
-//					'relations' => array(
-//						'category' => array('unsetInvalid' => true, 'required' => false),
-//						'tags' => array('required' => false),
-//						'images',
-//						'certificate',
-//						'description',
-//					),
-//				),
-//			)
-//		);
-//	}
+	public function behaviors()
+	{
+		return array_merge(
+			parent::behaviors(),
+			array(
+				'wform' => array(
+					'class' => 'ext.wform.WFormBehavior',
+					'relations' => array(
+						'category' => array('unsetInvalid' => true, 'required' => false),
+						'tags' => array('required' => false),
+						'images',
+						'certificate',
+						'description',
+					),
+				),
+			)
+		);
+	}
 }
