@@ -10,6 +10,7 @@ class WFormRelationHasMany extends WFormRelation {
 	public $type = CActiveRecord::HAS_MANY;
 
 	public function setAttributes($bunchOfAttributes) {
+		parent::setAttributes($bunchOfAttributes);
 
 		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
 		$relationPk = $relationClass::model()->getMetaData()->tableSchema->primaryKey;
@@ -85,8 +86,9 @@ class WFormRelationHasMany extends WFormRelation {
 	}
 
 	public function getRelatedModels() {
-		if (!$this->model->{$this->name})
-			return array();
+		if (!$this->model->{$this->name} || (!$this->isAttributesPerformed() && $this->isPreloaded())) {
+			$this->model->{$this->name} = array();
+		}
 
 		return (array) $this->model->{$this->name};
 	}

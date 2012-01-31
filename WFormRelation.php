@@ -28,6 +28,8 @@ class WFormRelation {
 	protected $type = null;
 
 	protected $_lazyDeleteRecords = array();
+	protected $_attributesPerformed = false;
+	protected $_preloaded = false; // relation was specified into CActiveRecord::with();
 
 	public static function getInstance($model, $relationName, $options = array()) {
 		// for 'relations' => array('someRelation','someOtherRelation')
@@ -90,6 +92,14 @@ class WFormRelation {
 		$this->model = $model;
 	}
 
+	public function setPreloaded($isPreloaded) {
+		$this->_preloaded = $isPreloaded;
+	}
+
+	public function isPreloaded() {
+		return $this->_preloaded;
+	}
+
 	public function addToLazyDelete($model) {
 		if (!$model->isNewRecord)
 			$this->_lazyDeleteRecords[$model->primaryKey] = $model;
@@ -108,5 +118,13 @@ class WFormRelation {
 
 	public function delete() {
 		return true;
+	}
+
+	public function setAttributes($bunchOfAttributes) {
+		$this->_attributesPerformed = true;
+	}
+
+	public function isAttributesPerformed() {
+		return $this->_attributesPerformed;
 	}
 }

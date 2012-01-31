@@ -64,10 +64,9 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 			$relatedIds[] = $model->primaryKey;
 		}
 
+
 		if (count($relatedIds))
 			$this->_unlink($relatedIds);
-
-//		parent::lazyDelete();
 	}
 
 	public function delete() {
@@ -89,19 +88,13 @@ class WFormRelationManyMany extends WFormRelationHasMany {
 
 			$sql = "DELETE FROM {$foreignKey['table']} WHERE {$foreignKey['model_fk']} = :model_fk";
 			if (!is_null($ids)) {
-				$sql .= " AND {$foreignKey['relation_fk']} IN (:relation_fk)";
-			}
-
-			$bindValues = array(
-				":model_fk" => $this->model->primaryKey,
-			);
-
-			if (!is_null($ids)) {
-				$bindValues[':relation_fk'] = "'" . join("','", $ids) . "'";
+				$sql .= " AND {$foreignKey['relation_fk']} IN ('" . join("','", $ids) . "')";
 			}
 
 			$command = $this->model->getDbConnection()->createCommand($sql);
-			$command->bindValues($bindValues);
+			$command->bindValues(array(
+				":model_fk" => $this->model->primaryKey,
+			));
 			$command->execute();
 
 		} catch (Exception $e) {

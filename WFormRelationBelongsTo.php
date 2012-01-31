@@ -26,6 +26,19 @@ class WFormRelationBelongsTo extends WFormRelationHasOne {
 		return true;
 	}
 
+	public function getRelatedModel($createNewIfEmpty = true) {
+		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
+
+		if (!$this->model->{$this->name} || (!$this->isAttributesPerformed() && $this->isPreloaded())) {
+			if (!$createNewIfEmpty)
+				return null;
+
+			$this->model->{$this->name} = new $relationClass();
+		}
+
+		return $this->model->{$this->name};
+	}
+
 	public function delete() {
 		return true;
 	}

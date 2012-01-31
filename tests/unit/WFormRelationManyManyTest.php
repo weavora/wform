@@ -207,6 +207,16 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals($expectedResult['saved'], $product->save(), $onFailComment);
 		$this->assertCount($expectedResult['relationsCount'], $product->tags, $onFailComment);
+
+		$product = $this->_getProductWithRelation(1, $relationOptions);
+
+		$product->attributes = array(
+			'name' => 'name',
+			'tags' => $relationAttribute,
+		);
+
+		$this->assertEquals($expectedResult['saved'], $product->save(), $onFailComment);
+		$this->assertCount($expectedResult['relationsCount'], $product->tags, $onFailComment);
 	}
 
 	public function saveProvider()
@@ -288,6 +298,51 @@ class WFormRelationManyManyTest extends PHPUnit_Framework_TestCase
 				'comment' => 'unsetInvalid, required, 1 invalid related objects'
 			),
 		);
+	}
+
+	/**
+	 * @covers WFormRelationManyMany::save
+	 */
+	public function testSaveIfNotSet()
+	{
+		$product = Product::model() ;
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'tags' => array('required' => false),
+			),
+		));
+		$product = $product->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'tags' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+
+		$this->assertEquals(true, $product->save());
+		$this->assertCount(2, $product->tags);
+
+		$product = Product::model();
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'tags' => array('required' => false),
+			),
+		));
+		$product = $product->with('tags')->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'tags' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+		$this->assertEquals(true, $product->save());
+		$this->assertCount(0, $product->tags);
 	}
 
 	/**

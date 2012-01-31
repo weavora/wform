@@ -21,6 +21,11 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 	protected $deleteQuery = array();
 
+	// relation was specified into CActiveRecord::with();
+	// finder and populated record are different AR instances that's why it should be static :(
+	// could potentially cause issue with multi threading
+	protected static $preloadedRelations = array();
+
 	/**
 	 * Extend standard AR behavior events
 	 *
@@ -44,6 +49,20 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
+	 * Cache preloaded relation by CActiveRecord::with() method
+	 *
+	 * @param $event
+	 * @return void
+	 */
+	public function beforeFind($event) {
+		$model = $event->sender;
+		self::$preloadedRelations = array();
+		foreach((array) $model->getDbCriteria()->with as $key => $value) {
+			self::$preloadedRelations[] = is_numeric($key) ? $value : $key;
+		}
+	}
+
+	/**
 	 * Rebuild related models
 	 *
 	 * @param $event
@@ -64,6 +83,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 		if (isset($this->relatedModels[$relation])) {
 			$this->relatedModels[$relation]->setAttributes($event->params['value']);
 		}
+
 	}
 
 	/**
@@ -205,6 +225,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 
 			if (($relationModel = WFormRelation::getInstance($parentModel, $relation, $options)) !== null) {
 				$this->relatedModels[$relation] = $relationModel;
+				$this->relatedModels[$relation]->setPreloaded(in_array($relation, self::$preloadedRelations));
 			} else {
 				unset($this->relations[$index]);
 			}

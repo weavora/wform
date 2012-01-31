@@ -212,6 +212,52 @@ class WFormRelationHasOneTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @covers WFormRelationHasOne::save
+	 */
+	public function testSaveIfNotSet()
+	{
+		$product = Product::model() ;
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'description' => array('required' => false),
+			),
+		));
+		$product = $product->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'description' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+
+		$this->assertEquals(true, $product->save());
+		$this->assertNotEmpty($product->description);
+
+		$product = Product::model();
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'description' => array('required' => false),
+			),
+		));
+		$product = $product->with('description')->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'description' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+		$this->assertEquals(true, $product->save());
+
+		$this->assertEmpty($product->description);
+	}
+
+	/**
 	 * @covers WFormRelationHasOne::getRelatedModel
 	 */
 	public function testGetRelatedModel()

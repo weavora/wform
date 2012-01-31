@@ -22,7 +22,7 @@ class ProductController extends Controller
 
 	public function actionEdit($id = null)
 	{
-		$productForm = $id ? ProductForm::model()->findByPk($id) : new ProductForm();
+		$productForm = $id ? ProductForm::model()->with('images','tags')->findByPk($id) : new ProductForm();
 
 		if (Yii::app()->request->getPost('ProductForm')) {
 			$productForm->attributes = Yii::app()->request->getPost('ProductForm');

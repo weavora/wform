@@ -12,6 +12,8 @@ class WFormRelationHasOne extends WFormRelation {
 	public $required = true;
 
 	public function setAttributes($attributes) {
+		parent::setAttributes($attributes);
+
 		if (!is_null($attributes)) {
 			$relationModel = $this->getRelatedModel();
 			$relationModel->attributes = $attributes;
@@ -51,11 +53,8 @@ class WFormRelationHasOne extends WFormRelation {
 	public function getRelatedModel($createNewIfEmpty = true) {
 		$relationClass = $this->info[WFormRelation::RELATION_CLASS];
 
-		if (!$this->model->{$this->name}) {
-			if (!$createNewIfEmpty)
-				return null;
-
-			$this->model->{$this->name} = new $relationClass();
+		if (!$this->model->{$this->name} || (!$this->isAttributesPerformed() && $this->isPreloaded())) {
+			$this->model->{$this->name} = $createNewIfEmpty ? new $relationClass() : null;
 		}
 
 		return $this->model->{$this->name};

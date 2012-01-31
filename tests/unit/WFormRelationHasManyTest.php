@@ -309,6 +309,51 @@ class WFormRelationHasManyTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @covers WFormRelationHasMany::save
+	 */
+	public function testSaveIfNotSet()
+	{
+		$product = Product::model() ;
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'images' => array('required' => false),
+			),
+		));
+		$product = $product->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'images' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+
+		$this->assertEquals(true, $product->save());
+		$this->assertCount(1, $product->images);
+
+		$product = Product::model();
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'images' => array('required' => false),
+			),
+		));
+		$product = $product->with('images')->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'images' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+		$this->assertEquals(true, $product->save());
+		$this->assertCount(0, $product->images);
+	}
+
+	/**
 	 * @covers WFormRelationHasMany::getRelatedModels
 	 */
 	public function testGetRelatedModels()

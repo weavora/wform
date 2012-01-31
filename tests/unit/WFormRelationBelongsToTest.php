@@ -70,6 +70,52 @@ class WFormRelationBelongsToTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @covers WFormRelationHasOne::save
+	 */
+	public function testSaveIfNotSet()
+	{
+		$product = Product::model() ;
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'category' => array('required' => false),
+			),
+		));
+		$product = $product->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'category' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+
+		$this->assertEquals(true, $product->save());
+		$this->assertNotEmpty($product->category);
+
+		$product = Product::model();
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'category' => array('required' => false),
+			),
+		));
+		$product = $product->with('category')->findByPk(1);
+		$product->attachBehavior('wform', array(
+			'class' => 'WFormBehavior',
+			'relations' => array(
+				'category' => array('required' => false),
+			),
+		));
+		$product->afterFind(new CEvent($product));
+
+		$this->assertEquals(true, $product->save());
+
+		$this->assertNotEmpty($product->category);
+	}
+
+	/**
 	 * @covers WFormRelationHasMany::validate
 	 * @dataProvider validateProvider
 	 */
