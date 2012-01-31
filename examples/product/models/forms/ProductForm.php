@@ -16,28 +16,32 @@ class ProductForm extends Product
 	public function relations()
 	{
 		return array_merge(parent::relations(), array(
-			'images' => array(self::HAS_MANY, 'AttachmentForm', 'object_id', 'condition' => 'images.object_type=:object_type', 'params' => array('object_type' => Attachment::OBJECT_TYPE_PRODUCT_IMAGE)),
+			'images' => array(self::HAS_MANY, 'AttachmentForm', 'object_id',
+				'condition' => 'images.object_type = :object_type',
+				'params' => array('object_type' => Attachment::OBJECT_TYPE_PRODUCT_IMAGE),
+				'together' => false,
+			),
 			'certificate' => array(self::HAS_ONE, 'CertificateForm', 'product_id'),
 		));
 	}
 
 
-	public function behaviors()
-	{
-		return array_merge(
-			parent::behaviors(),
-			array(
-				'wform' => array(
-					'class' => 'ext.wform.WFormBehavior',
-					'relations' => array(
-						'category' => array('unsetInvalid' => true, 'required' => false),
-						'tags' => array('required' => false),
-						'images',
-						'certificate',
-						'description',
-					),
-				),
-			)
-		);
-	}
+//	public function behaviors()
+//	{
+//		return array_merge(
+//			parent::behaviors(),
+//			array(
+//				'wform' => array(
+//					'class' => 'ext.wform.WFormBehavior',
+//					'relations' => array(
+//						'category' => array('unsetInvalid' => true, 'required' => false),
+//						'tags' => array('required' => false),
+//						'images',
+//						'certificate',
+//						'description',
+//					),
+//				),
+//			)
+//		);
+//	}
 }

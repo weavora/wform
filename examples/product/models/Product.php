@@ -32,7 +32,11 @@ class Product extends WActiveRecord
 		return array(
 			'category' => array(self::BELONGS_TO, 'Category', 'category_id'),
 			'tags' => array(self::MANY_MANY, 'Tag', 'products_2_tags(product_id, tag_id)'),
-			'images' => array(self::HAS_MANY, 'Attachment', 'object_id', 'condition' => 'images.object_type=:object_type', 'params' => array('object_type' => Attachment::OBJECT_TYPE_PRODUCT_IMAGE)),
+			'images' => array(self::HAS_MANY, 'Attachment', 'object_id',
+				'condition' => 'images.object_type=:object_type',
+				'params' => array('object_type' => Attachment::OBJECT_TYPE_PRODUCT_IMAGE),
+				'together' => false,
+			),
 			'certificate' => array(self::HAS_ONE, 'Certificate', 'product_id'),
 			'description' => array(self::HAS_ONE, 'ProductDescription', 'product_id'),
 		);
