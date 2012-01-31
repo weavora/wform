@@ -134,7 +134,7 @@ class MyController extends Controller {
 	// form create & edit processed by single action
 	public function actionEdit($id = null)
 	{
-		$myModel = $id ? MyModel::model()->findByPk($id) : new MyModel();
+		$myModel = $id ? MyModel::model()->with('hasManyRelation','manyManyRelation')->findByPk($id) : new MyModel();
 		if(Yii::app()->request->isPostRequest) {
 			$myModel->attributes = Yii::app()->request->getPost('MyModel');
 			if ($myModel->save()) {
