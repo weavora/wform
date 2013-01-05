@@ -50,7 +50,7 @@
 			if (self.options.mode == "append") {
 				newForm.appendTo(self.element);
 			} else {
-				newForm.appendTo(self.element);
+				newForm.prependTo(self.element);
 			}
 
 			newForm
