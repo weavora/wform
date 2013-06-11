@@ -267,7 +267,9 @@ class MyController extends Controller {
 			templateClass: 'just-empty-form-template-manyManyRelation',
 			addLink: '.add',
 			deleteLink: '.delete',
-			mode: 'append' // could be also 'prepend'. Specify should new form put to top or bottom of list
+			mode: 'append', // could be also 'prepend'. Specify should new form put to top or bottom of list
+			// apendTo: '.some-element', // Append to new item into .some-element inside .manyManyRelation
+			// prependTo: '.some-element'
 		})
 		.on('multiplyForms.add', function(event, embedForm, multiplyFormInstance){})
 		.on('multiplyForms.delete', function(event, embedForm, multiplyFormInstance){
