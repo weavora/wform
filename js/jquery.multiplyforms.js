@@ -1,8 +1,10 @@
 (function($){
 	$.multiplyForms = function(element, options){
+
 		var self = this;
 		self.element = $(element);
-		self.formCounter = 100;
+        
+		//self.formCounter = 100;
 		self.options = $.extend({}, $.multiplyForms.defaultOptions, options);
 
 		self.element.data("multiplyForms", self);
@@ -48,9 +50,17 @@
 				.end();
 
 			if (self.options.mode == "append") {
-				newForm.appendTo(self.element);
+                if (self.options.appendTo) {
+                    self.element.find(self.options.appendTo).append(newForm);
+                } else {
+                    newForm.appendTo(self.element);
+                }
 			} else {
-				newForm.prependTo(self.element);
+                if (self.options.prependTo) {
+                    self.element.find(self.options.prependTo).append(newForm);
+                } else {
+                    newForm.prependTo(self.element);
+                }
 			}
 
 			newForm
@@ -72,10 +82,10 @@
 
 		self._updateIndex = function(form) {
 			form.find('*[name*="{index}"]').each(function() {
-				$(this).attr('name', $(this).attr('name').replace('{index}', self.formCounter));
-				this.id = this.id.replace('{index}', self.formCounter);
+				$(this).attr('name', $(this).attr('name').replace('{index}', $.multiplyForms.formCounter));
+				this.id = this.id.replace('{index}', $.multiplyForms.formCounter);
 			});
-			self.formCounter++;
+			$.multiplyForms.formCounter++;
 		};
 
 		self.init();
@@ -88,8 +98,12 @@
 		embedClass: "embed",
 		afterAdd: undefined,
 		beforeDelete: undefined,
-		mode: "append"
+		mode: "append",
+        	appendTo: undefined,
+        	prependTo: undefined
 	};
+
+    $.multiplyForms.formCounter = 1000;
 
 	$.fn.multiplyForms = function(options) {
 		return this.each(function(){
