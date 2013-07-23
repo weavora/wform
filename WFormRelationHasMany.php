@@ -24,8 +24,12 @@ class WFormRelationHasMany extends WFormRelation {
 
 		$relationModels = array();
 
-		foreach ($bunchOfAttributes as $key => $attributes) {
-			if (isset($attributes[$relationPk])) {
+		foreach ($bunchOfAttributes as $key => &$attributes) {
+			if (!is_array($attributes) && is_numeric($attributes)) {
+                $attributes = array($relationPk => $attributes);
+            }
+            
+            if (isset($attributes[$relationPk])) {
 				if (isset($modelsDictionary[$attributes[$relationPk]])) {
 					$relationModel = $modelsDictionary[$attributes[$relationPk]];
 				} else {
