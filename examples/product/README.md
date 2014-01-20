@@ -2,7 +2,7 @@
 
 # Setup
 
-1. Copy sample source to your application
+1. Copy the sample source to your application
 2. Execute db dump from products.sql
 3. Update imports in main.php to the following:
 
@@ -14,10 +14,10 @@
 	'ext.wform.*',
 ),
 ```
-4. Now you have access to sample controller: 
+4. Now you have access to the sample controller: 
  
 - Product List: http://yourhost.local/index.php?r=/product
-- Create Product: http://yourhost.local/index.php?r=/product/add
+- Create a Product: http://yourhost.local/index.php?r=/product/add
 
 # Form Layout
 
