@@ -22,8 +22,8 @@ class WFormBehavior extends CActiveRecordBehavior {
 	protected $deleteQuery = array();
 
 	// relation was specified into CActiveRecord::with();
-	// finder and populated record are different AR instances that's why it should be static :(
-	// could potentially cause issue with multi threading
+	// finder and populated record are different AR instances that's why they should be static :(
+	// could potentially cause an issue with multi threading
 	protected static $preloadedRelations = array();
 
 	/**
@@ -121,7 +121,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
-	 * Save related models which affect to parent models
+	 * Save related models that affect parent models
 	 *
 	 * @param $event
 	 * @return void
@@ -138,7 +138,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
-	 * Save related models which depends on parent model
+	 * Save related models that depend on the parent model
 	 *
 	 * @param $event
 	 * @return void
@@ -158,7 +158,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
-	 * Delete related models which depends on parent model
+	 * Delete related models that depend on the parent model
 	 *
 	 * @param $event
 	 * @return void
@@ -194,7 +194,7 @@ class WFormBehavior extends CActiveRecordBehavior {
 	}
 
 	/**
-	 * Find attribute name into path (e.g. categories.0.name)
+	 * Find an attribute name in the path (e.g. categories.0.name)
 	 *
 	 * @param $path path
 	 * @return string attribute name
