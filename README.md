@@ -1,7 +1,7 @@
 Yii Composite Form Extension
 ==========================
 
-Extension that can greatly simplify complex forms processing that have multiple relations.
+The extension that can greatly simplify processing of complex forms with multiple relations.
 
 [Weavora's](http://weavora.com) Git Repo - [https://github.com/weavora/wform](https://github.com/weavora/wform)
 
@@ -14,9 +14,9 @@ Extension that can greatly simplify complex forms processing that have multiple 
 Configuration
 -----
 
-1) Download and unpack source into protected/extensions/ folder.
+1) Download and unpack the source into the protected/extensions/ folder.
 
-2) Below you can see config settings for import:
+2) Below you can see the config settings for import:
 
 ```php
 <?php
@@ -31,11 +31,11 @@ return array(
 );
 ```
 
-3) Extension require changing of CActiveRecord::onUnsafeAttribute. Here are few options for that:
+3) The extension requires changing CActiveRecord::onUnsafeAttribute. Here are a few options for that:
 
 a) Extend all your models/forms from WActiveRecord instead of CActiveRecord
 
-b) If you already has modified class for active record, then extend it from WActiveRecord or add onUnsafeAttribute method:
+b) If you have already modified the class for active record, extend it from WActiveRecord or add the onUnsafeAttribute method:
 
 ```php
 <?php
@@ -71,8 +71,8 @@ class ActiveRecord extends CActiveRecord
 Usage
 -----
 
-1) Modify model: define relations and attach behavior.
-You can also create separate class for the form extended from your model.
+1) Modify the model: define relations and attach behavior.
+You can also create a separate class for the form extended from your model.
 
 ```php
 <?php
@@ -101,21 +101,21 @@ class MyModel extends WActiveRecord {
 				'class' => 'ext.wform.WFormBehavior',
 				'relations' => array(
 					'hasOneRelation' => array(
-						'required' => true, // declare that relation item should be valid (default for HAS_ONE: false)
-						'cascadeDelete' => true, // declare if relation item would be deleted during parent model delete  (default for HAS_ONE: true)
+						'required' => true, // declare that a relation item should be valid (default for HAS_ONE: false)
+						'cascadeDelete' => true, // declare if a relation item would be deleted during parent model deletion  (default for HAS_ONE: true)
 					),
 					'belongsToRelation' => array(
-						'required' => true, // declare that all relations items to be valid (default for BELONGS_TO: false)
+						'required' => true, // declare all relation items to be valid (default for BELONGS_TO: false)
 					),
 					'hasManyRelation' => array(
-						'required' => true, // declare that all relations items to be valid (default for HAS_MANY: false)
-						'unsetInvalid' => true, // will unset invalid relation items during save or validate (default for HAS_MANY: false)
-						'cascadeDelete' => true, // declare if relation items would be deleted during parent model delete  (default for HAS_MANY: true)
+						'required' => true, // declare all relation items to be valid (default for HAS_MANY: false)
+						'unsetInvalid' => true, // will unset invalid relation items during save or validate actions (default for HAS_MANY: false)
+						'cascadeDelete' => true, // declare if relation items would be deleted during parent model deletion  (default for HAS_MANY: true)
 					),
 					'manyManyRelation' => array(
-						'required' => true, // declare that all relations items to be valid (default for MANY_MANY: false)
-						'unsetInvalid' => true, // will unset invalid relation items during save or validate (default for MANY_MANY: false)
-						'cascadeDelete' => true, // declare if db rows with relation item link to model would be deleted during parent model delete  (default for MANY_MANY: true)
+						'required' => true, // declare all relation items to be valid (default for MANY_MANY: false)
+						'unsetInvalid' => true, // will unset invalid relation items during save or validate actions (default for MANY_MANY: false)
+						'cascadeDelete' => true, // declare if db rows with a relation item link to model would be deleted during parent model deletion  (default for MANY_MANY: true)
 					),
 				),
 			),
@@ -125,13 +125,13 @@ class MyModel extends WActiveRecord {
 }
 ```
 
-2) Create action to process form.
+2) Create an action to process the form.
 
 ```php
 <?php
 class MyController extends Controller {
 	...
-	// form create & edit processed by single action
+	// form creation & editing processed by a single action
 	public function actionEdit($id = null)
 	{
 		$myModel = $id ? MyModel::model()->with('hasManyRelation','manyManyRelation')->findByPk($id) : new MyModel();
@@ -146,7 +146,7 @@ class MyController extends Controller {
 		));
 	}
 
-	// delete model with relation with single line of code :)
+	// delete the model with relation to a single line of code :)
 	public function actionDelete($id)
 	{
 		$myModel = MyModel::model()->findByPk($id);
@@ -161,7 +161,7 @@ class MyController extends Controller {
 3) Include js/jquery.multiplyforms.js jquery plugin into your layout
 
 
-4) Define form using WForm instead of CActiveForm
+4) Define the form using WForm instead of CActiveForm
 
 ```php
 // protected/views/my/edit.php
